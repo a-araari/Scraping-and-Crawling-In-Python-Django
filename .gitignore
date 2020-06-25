@@ -1,0 +1,11 @@
+# database
+db.sqlite3
+
+#Production settings file
+ikrily/settings/prodution.py
+
+# python cache
+**/__pycache__
+
+# project migrations
+**/migrations
