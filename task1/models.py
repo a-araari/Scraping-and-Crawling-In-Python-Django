@@ -3,9 +3,17 @@ from django.utils import timezone as tz
 from django.db import models
 
 
+def get_auto_generated_task_id():
+    count = tbl_page_data.objects.count()
+    if count == None:
+        return 1
+    else:
+        return count + 1
+
+
 class tbl_page_data(models.Model):
     # unique id
-    task_id = models.IntegerField()
+    task_id = models.IntegerField(default=get_auto_generated_task_id, editable=False, unique=True)
     # single url
     url = models.URLField(max_length=200)
     # HTTP status code
