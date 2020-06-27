@@ -19,6 +19,9 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    # task1 api app
     path('api_main_url/page_data/', include('task1.urls')),
+
+    # task2 api app
     path('api_main_url/crawl/', include('task2.urls')),
 ]

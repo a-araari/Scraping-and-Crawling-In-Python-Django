@@ -3,38 +3,46 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
 from .models import tbl_page_data
-from .options import start_task, delete_tbl
+from . import  options
 
 
 def check_key_validation(key):
     """
-    check secret key validation in the database
-    raise exception if key is unvalid
+    check if secret key valid
+    raise exception otherwise
     """
     if not Token.objects.filter(key=key).exists():
-        raise Exception('Unvalid validation key!')
+        raise ValueError('Unvalid validation key!')
 
 
 class PageDataSetView(APIView):
-    # url={my url}&waiting={waiting time after page load}&scroll={scrollin page}&validation_key={our-secret-key}Return:1
+    """
+    Set API View for creating scrape tasks
+    """
     def get(self, request, format=None):
         """
-        Create a row in tbl_page_data using the values in request.GET
+        Create a task in tbl_page_data using the args in request.GET
+        required query strings: (url, waiting, scroll, validation_key)
         """
         try:
+            #validate the secret key
             secret_key = request.GET['validation_key']
             check_key_validation(secret_key)
 
+            # getting query strings
             url = request.GET['url']
             waiting = request.GET['waiting']
             scroll = request.GET['scroll']
 
+            # saving the task
             tbl = tbl_page_data(url=url, waiting=waiting, scroll=scroll)
             tbl.save()
 
             # starting the task in a seperate Thread
-            start_task(tbl)
+            # see options.py
+            options.start_task(tbl)
 
+            # return response (task_id, url, pending_task)
             return Response({
                     'data': {
                         'task_id': tbl.task_id,
@@ -67,7 +75,7 @@ class PageDataGetView(APIView):
 
             res = {
                 "Content":{
-                    "Created_at":tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
+                    "created_at":tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": task_id,
                     "url": tbl.url,
                     "pending_task" : tbl_page_data.objects.filter(status_process=tbl_page_data.PENDING_STATUS).count(),# (show us the total number of pending task in queue forthis API)
@@ -83,7 +91,7 @@ class PageDataGetView(APIView):
 
             # delete this instance if status_process in ('success', 'error')
             if tbl.status_process in (tbl_page_data.SUCCESS_STATUS, tbl_page_data.ERROR_STATUS):
-                delete_tbl(tbl)
+                options.delete_tbl(tbl)
 
             return Response(res)
 

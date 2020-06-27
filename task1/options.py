@@ -1,4 +1,5 @@
 import threading
+import time 
 
 from bs4 import BeautifulSoup
 import requests
@@ -15,6 +16,8 @@ def _start_task(tbl):
     try:
         page = requests.get(tbl.url)
 
+        time.sleep(tbl.waiting)
+
         tbl.status_code = page.status_code
         tbl.save()
 
@@ -27,23 +30,18 @@ def _start_task(tbl):
 
             return
 
-        # page loaded successfully, continue
-        tbl.status_process = tbl_page_data.PROCESSING_STATUS
-        tbl.save()
-
         soup = BeautifulSoup(page.content, 'html.parser')
 
         # save page content
         tbl.page_content = soup.prettify()
         tbl.status_process = tbl_page_data.SUCCESS_STATUS
 
-        tbl.save()
     except Exception as e:
         tbl.status_process = tbl_page_data.ERROR_STATUS
         tbl.error_msg = str(e)
 
-        tbl.save();
-
+    finally:
+        tbl.save()
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])

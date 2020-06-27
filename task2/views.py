@@ -68,7 +68,7 @@ class CrawlGetView(APIView):
 
             resp = {
                 "Content": {
-                    "Created_at": tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
+                    "created_at": tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": tbl.task_id,
                     "url": tbl.url,
                     "pending_task": tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PENDING_STATUS).count(),

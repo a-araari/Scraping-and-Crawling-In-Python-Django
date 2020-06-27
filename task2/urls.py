@@ -3,7 +3,8 @@ from task2 import views
 
 
 urlpatterns = [
-    # api_main_url/crawl/set/?url={my url}&limit={url-crawl-limitation}&waiting={waiting time after pageload}&scroll={scroll in page}&validation_key={our-secret-key}
+    # GET: local path : /set/?url={my url}&waiting={waiting time}&limit={crawk limit}&scroll={scrollin page}&validation_key={our-secret-key}
     path('set/', views.CrawlSetView.as_view()),
+    # SET: local path : /set/?task_id={task id}&validation_key={our-secret-key}
     path('get/', views.CrawlGetView.as_view()),
 ]

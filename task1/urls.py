@@ -3,7 +3,8 @@ from task1 import views
 
 
 urlpatterns = [
-    # api_main_url/page_data/set/?url={my url}&waiting={waiting time after page load}&scroll={scrollin page}&validation_key={our-secret-key}
+    # GET: local path : /set/?url={my url}&waiting={waiting time}&scroll={scrollin page}&validation_key={our-secret-key}
     path('set/', views.PageDataSetView.as_view()),
+    # SET: local path : /set/?task_id={task id}&validation_key={our-secret-key}
     path('get/', views.PageDataGetView.as_view()),
 ]
