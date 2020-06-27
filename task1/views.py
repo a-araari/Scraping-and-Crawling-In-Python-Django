@@ -39,7 +39,7 @@ class PageDataSetView(APIView):
                     'data': {
                         'task_id': tbl.task_id,
                         'url': tbl.url,
-                        'pending_task': tbl_page_data.objects.exclude(status_process='success').count(),
+                        'pending_task': tbl_page_data.objects.filter(status_process=tbl_page_data.PENDING_STATUS).count(),
                     }
                 })
         except Exception as e:

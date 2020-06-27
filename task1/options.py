@@ -5,36 +5,44 @@ import requests
 
 from .models import tbl_page_data
 
+
+
 def _start_task(tbl):
     """
     Task work goes here!
     tbl saved each time status_code or status_process changed
     """
-    page = requests.get(tbl.url)
+    try:
+        page = requests.get(tbl.url)
 
-    tbl.status_code = page.status_code
-    tbl.save()
-
-
-    # check status code, return if status code not 2xx
-    if page.status_code not in range(200, 300):
-        tbl.status_process = tbl_page_data.ERROR_STATUS
-        tbl.error_msg = "url doesn't return 2xx status code"
+        tbl.status_code = page.status_code
         tbl.save()
 
-        return
 
-    # page loaded successfully, continue
-    tbl.status_process = tbl_page_data.PROCESSING_STATUS
-    tbl.save()
+        # check status code, return if status code not 2xx
+        if page.status_code not in range(200, 300):
+            tbl.status_process = tbl_page_data.ERROR_STATUS
+            tbl.error_msg = f"page return {page.status_code} code"
+            tbl.save()
 
-    soup = BeautifulSoup(page.content, 'html.parser')
+            return
 
-    # save page content
-    tbl.page_content = soup.prettify()
-    tbl.status_process = tbl_page_data.SUCCESS_STATUS
+        # page loaded successfully, continue
+        tbl.status_process = tbl_page_data.PROCESSING_STATUS
+        tbl.save()
 
-    tbl.save()
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        # save page content
+        tbl.page_content = soup.prettify()
+        tbl.status_process = tbl_page_data.SUCCESS_STATUS
+
+        tbl.save()
+    except Exception as e:
+        tbl.status_process = tbl_page_data.ERROR_STATUS
+        tbl.error_msg = str(e)
+
+        tbl.save();
 
 
 def start_task(tbl):

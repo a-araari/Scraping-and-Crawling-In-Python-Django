@@ -1,14 +1,15 @@
 import random
+import string
 
 from django.utils import timezone as tz
-
 from django.db import models
 
 
 def get_auto_generated_task_id():
-    task_id = random.randint(1, 999999)
+    task_id = ''.join(random.choice(string.digits + string.ascii_lowercase) for _ in range(7))
+
     while tbl_page_data.objects.filter(task_id=task_id).exists():
-        task_id = random.randint(1, 999999)
+        task_id = ''.join(random.choice(string.digits + string.ascii_lowercase) for _ in range(7))
 
     return task_id
 
@@ -27,7 +28,7 @@ class tbl_page_data(models.Model):
     }
 
     # unique id
-    task_id = models.IntegerField(default=get_auto_generated_task_id, editable=False, unique=True)
+    task_id = models.CharField(max_length=7, default=get_auto_generated_task_id, editable=False, unique=True)
     # single url
     url = models.URLField(max_length=200)
     # HTTP status code
@@ -44,3 +45,6 @@ class tbl_page_data(models.Model):
     waiting = models.IntegerField(null=True, blank=True)
     # scroll in page 
     scroll = models.IntegerField(null=True, blank=True)
+    
+    def __str__(self):
+        return f'{self.task_id}: {self.url}'
