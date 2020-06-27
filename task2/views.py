@@ -1,16 +1,19 @@
+from django.conf import settings
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
-from .options import start_crawl_task
+from . import options
+
 
 def check_key_validation(key):
     """
     check secret key validation in the database
     raise exception if key is unvalid
     """
-    if not Token.objects.filter(key=key).exists():
+    if key != settings.VALIDATION_KEY:
         raise Exception('Unvalid validation key!')
 
 
@@ -33,7 +36,7 @@ class CrawlSetView(APIView):
             tbl.save()
 
             # starting the crawl task in a seperate Thread
-            start_crawl_task(tbl)
+            options.start_crawl_task(tbl)
 
             return Response({
                     'data': {
@@ -92,6 +95,11 @@ class CrawlGetView(APIView):
                 resp['Content']['url_list'] = url_list
             else:
                 resp['Content']['url_list'] = None
+
+            # delete this instance if status_process in ('success', 'error')
+            if tbl.status_process in (tbl_crawl_task.SUCCESS_STATUS, tbl_crawl_task.ERROR_STATUS):
+                options.delete_tbl(tbl)
+
 
             return Response(resp)
         except Exception as e:

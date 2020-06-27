@@ -15,7 +15,7 @@ class Crawl:
     def __init__(self, url, limit):
         self.url = url
         self.limit = int(limit)
-        self.count = 0
+        self.count = 1
 
         # extract base url to resolve relative
         self.linksparts = urlsplit(url)
@@ -24,8 +24,6 @@ class Crawl:
         self.base_url = '{0.scheme}://{0.netloc}'.format(self.linksparts)  # e.g: https://www.youtube.com
         # self.path = url[:url.rfind('/')+1] if '/' in self.linksparts.path else url
         self.processed_urls = []
-
-        print(self.linksparts, self.base, self.strip_base, self.base_url, self.path, sep=' \n')
 
     def get_page(self, url, waiting=0):
         # wait
@@ -40,7 +38,7 @@ class Crawl:
             code = response.status_code
         except Exception as e:
             print(e)
-            return None, None
+            return None, None, url
 
         soup = BeautifulSoup(response.text, 'html.parser')
         return soup, code, url
@@ -66,7 +64,7 @@ class Crawl:
         return  count - 1 if url.endswith('/') else count 
 
     def _crawl(self, soup, save, tbl, count=0):
-        if self.count > self.limit or soup is None:
+        if self.count >= self.limit or soup is None:
             print(f'limit={self.limit} reached!')
             return
 
@@ -100,7 +98,6 @@ class Crawl:
         return status_code
 
 
-
 def _start_crawl_task(tbl):
     """
     Crawl work goes here!
@@ -132,6 +129,7 @@ def _start_crawl_task(tbl):
         tbl.error_mesg = f'Cannot connect to {tbl.url}. status code: {status_code}'
 
     tbl.save()
+
 
 def start_crawl_task(tbl):
     t = threading.Thread(target=_start_crawl_task, args=[tbl])

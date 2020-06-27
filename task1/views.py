@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -11,7 +13,7 @@ def check_key_validation(key):
     check if secret key valid
     raise exception otherwise
     """
-    if not Token.objects.filter(key=key).exists():
+    if key != settings.VALIDATION_KEY:
         raise ValueError('Unvalid validation key!')
 
 
