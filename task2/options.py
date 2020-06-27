@@ -28,7 +28,7 @@ class Crawl:
     def get_page(self, url, waiting=0):
         # wait
         time.sleep(waiting)
-        print(f'waiting for {waiting}')
+        print(f'waiting for {waiting} seconds')
 
         if not url.startswith('http'):
             url = 'https:' + ('//' if not url.startswith('//') else '') + url
@@ -46,12 +46,13 @@ class Crawl:
         self.count += 1
         # extract link url from the anchor
         anchor = link.attrs['href'] if 'href' in link.attrs else ''
+        anchor = anchor.replace('www.', '')
 
         if anchor.startswith('//'):
             return (anchor[2:], True)
         elif anchor.startswith('/'):
             return (self.base_url + anchor, True)
-        elif self.strip_base in anchor:
+        elif self.strip_base in anchor[:len(self.strip_base) + 7 + 4]: # +7 for https:// and +4 for www.
             return (anchor, True)
         else:
             # External url
@@ -63,6 +64,7 @@ class Crawl:
 
     def _crawl(self, soup, save, tbl, count=0):
         if self.count > self.limit or soup is None:
+            print(f'limit={self.limit} reached!')
             return
 
         links = soup.find_all('a')
