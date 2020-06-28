@@ -74,24 +74,26 @@ class WebScraper:
 
             time.sleep(self.waiting)
 
-            load_more_btn = self.driver.find_element_by_css_selector(self.load_btn_css_selector)
-            page_content = self.get_content()
-            old_scroll_count = 0
-            new_sroll_count = self.get_scroll_count()
-       
-            while load_more_btn.is_displayed():
-                load_more_btn.click()
-                WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.load_btn_css_selector))).click()
-
-                old_scroll_count = new_sroll_count
+            try:
+                load_more_btn = self.driver.find_element_by_css_selector(self.load_btn_css_selector)
+                page_content = self.get_content()
+                old_scroll_count = 0
                 new_sroll_count = self.get_scroll_count()
+           
+                while load_more_btn.is_displayed():
+                    load_more_btn.click()
+                    WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.load_btn_css_selector))).click()
 
-                print(old_scroll_count, new_sroll_count, self.scroll)
+                    old_scroll_count = new_sroll_count
+                    new_sroll_count = self.get_scroll_count()
 
-                if new_sroll_count > self.scroll:
-                    print('scroll limit!')
-                    break
+                    print(old_scroll_count, new_sroll_count, self.scroll)
 
+                    if new_sroll_count > self.scroll:
+                        print('scroll limit!')
+                        break
+            except:
+                pass
                 page_content = self.get_content()
 
             print('URL scraped!')
