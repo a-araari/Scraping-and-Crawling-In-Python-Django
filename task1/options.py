@@ -93,7 +93,6 @@ class WebScraper:
                         print('scroll limit!')
                         break
             except:
-                pass
                 page_content = self.get_content()
 
             print('URL scraped!')
