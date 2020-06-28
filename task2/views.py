@@ -14,7 +14,7 @@ def check_key_validation(key):
     raise exception if key is unvalid
     """
     if key != settings.VALIDATION_KEY:
-        raise Exception('Unvalid validation key!')
+        raise ValueError('Unvalid validation key!')
 
 
 class CrawlSetView(APIView):
