@@ -30,7 +30,7 @@ VALIDATION_KEY = 'OEpotRjkg7UGxba6AfOUcIbNfNlvE9a1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.0.0.1', '167.172.143.55']
 
 
 # Application definition
@@ -130,3 +130,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
