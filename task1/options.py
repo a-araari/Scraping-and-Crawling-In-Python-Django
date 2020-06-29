@@ -19,11 +19,10 @@ class WebScraper:
         Attributes:
             url (str): web URL.
             load_btn_css_selector (str): load button css selector.
-            firefox_driver_path (str): Path to Firefox driver.
             waiting (int): waiting time after page load.
             scroll (int): max scroll height to be scraped.
     """
-    def __init__(self, url, load_btn_css_selector, firefox_driver_path, waiting, scroll):
+    def __init__(self, url, load_btn_css_selector, waiting, scroll):
         """ Raise ValueError if url is not valid
         """ 
         self.url = url
@@ -38,10 +37,8 @@ class WebScraper:
             raise ValueError(f'Unvalid Url: {self.url}')
 
         print('Creating driver..')
-        self.driver = webdriver.Chrome(executable_path=firefox_driver_path, options=options)
+        self.driver = webdriver.Firefox(options=options)
         print('Driver created!')
-
-        self.driver.implicitly_wait(self.waiting)
 
     def valid_url(self, url):
         """Validate URLs, return True if url is True
@@ -124,7 +121,6 @@ def _start_task(tbl):
         task = WebScraper(
             url=tbl.url,
             load_btn_css_selector='.button.J_LoadMoreButton',
-            firefox_driver_path='/usr/bin/geckodriver',
             waiting=int(tbl.waiting),
             scroll=int(tbl.scroll),
         )
