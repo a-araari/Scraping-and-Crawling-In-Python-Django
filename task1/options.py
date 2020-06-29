@@ -124,7 +124,7 @@ def _start_task(tbl):
         task = WebScraper(
             url=tbl.url,
             load_btn_css_selector='.button.J_LoadMoreButton',
-            firefox_driver_path='C:\\Users\\Q\\Desktop\\geckodriver.exe',
+            firefox_driver_path='/usr/bin/geckodriver',
             waiting=int(tbl.waiting),
             scroll=int(tbl.scroll),
         )
