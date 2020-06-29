@@ -29,16 +29,13 @@ class WebScraper:
         self.load_btn_css_selector = load_btn_css_selector
         self.waiting = waiting
         self.scroll = scroll
-        options = FirefoxOptions()
+        self.options = FirefoxOptions()
         options.add_argument('--incognito')
         options.add_argument('--headless')
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
 
-        print('Creating driver..')
-        self.driver = webdriver.Firefox(options=options)
-        print('Driver created!')
 
     def valid_url(self, url):
         """Validate URLs, return True if url is True
@@ -62,6 +59,9 @@ class WebScraper:
         return str(BeautifulSoup(self.driver.page_source, 'html.parser'))
 
     def start_scraping(self):
+        print('Creating driver..')
+        self.driver = webdriver.Firefox(options=self.options)
+        print('Driver created!')
 
         page_content = ''
         try:
@@ -96,7 +96,9 @@ class WebScraper:
 
         except Exception as ex:
             return page_content, repr(ex), False
-
+        finally:
+            self.driver.quit()
+            
         return page_content, None, True
 
 def _start_task(tbl):
