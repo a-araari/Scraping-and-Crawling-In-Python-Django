@@ -97,7 +97,10 @@ class WebScraper:
         except Exception as ex:
             return page_content, repr(ex), False
         finally:
-            self.driver.quit()
+            try:
+                self.driver.quit()
+            except:
+                pass
 
         return page_content, None, True
 
