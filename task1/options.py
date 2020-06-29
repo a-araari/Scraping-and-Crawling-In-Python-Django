@@ -30,8 +30,8 @@ class WebScraper:
         self.waiting = waiting
         self.scroll = scroll
         self.options = FirefoxOptions()
-        options.add_argument('--incognito')
-        options.add_argument('--headless')
+        self.options.add_argument('--incognito')
+        self.options.add_argument('--headless')
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
@@ -98,7 +98,7 @@ class WebScraper:
             return page_content, repr(ex), False
         finally:
             self.driver.quit()
-            
+
         return page_content, None, True
 
 def _start_task(tbl):
