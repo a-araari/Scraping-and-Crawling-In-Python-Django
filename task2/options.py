@@ -69,11 +69,14 @@ class Crawl:
             return
 
         links = soup.find_all('a')
+        saved_links = list()
 
         for sub_link in links:
             if self.count > self.limit:
                 break
+
             sub_url, internal = self.get_url(sub_link)
+            
             if sub_url in self.processed_urls or sub_url.endswith('#'):
                 self.count -= 1
                 continue
@@ -84,9 +87,17 @@ class Crawl:
             sub_soup, status_code, valid_url = self.get_page(sub_url, int(tbl.waiting))
 
             save(tbl, valid_url, tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE, status_code, depth_level)
+            saved_links.append({"link": sub_url, "internal": internal})
 
-            if not internal:
+        if self.count >= self.limit:
+            return
+
+        for sub_link_dict in saved_links:
+            if self.count >= self.limit:
                 return
+
+            if not sub_link_dict['internal']:
+                continue
 
             self._crawl(sub_soup, save, tbl, count=self.count)
 
