@@ -33,8 +33,8 @@ class PageDataSetView(APIView):
 
             # getting query strings
             url = request.GET['url']
-            waiting = request.GET.get('waiting', None)
-            scroll = request.GET.get('scroll', None)
+            waiting = request.GET['waiting']
+            scroll = request.GET['scroll']
 
             # saving the task
             tbl = tbl_page_data(url=url, waiting=waiting, scroll=scroll)
