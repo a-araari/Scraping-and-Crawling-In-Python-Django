@@ -24,9 +24,9 @@ class WebScraper:
         self.url = url
         self.waiting = waiting
         self.scroll = scroll
-        options = FirefoxOptions()
-        options.add_argument('--incognito')
-        options.add_argument('--headless')
+        self.options = FirefoxOptions()
+        self.options.add_argument('--incognito')
+        self.options.add_argument('--headless')
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
@@ -68,7 +68,7 @@ class WebScraper:
 
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Firefox(options=self.self.options)
         print('Driver created!')
 
         page_content = ''
