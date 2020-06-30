@@ -68,7 +68,7 @@ class WebScraper:
 
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Firefox(options=self.self.options)
+        self.driver = webdriver.Firefox(options=self.options)
         print('Driver created!')
 
         page_content = ''
