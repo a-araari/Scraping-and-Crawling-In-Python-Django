@@ -22,7 +22,7 @@ class WebScraper:
             waiting (int): waiting time after page load.
             scroll (int): max scroll height to be scraped.
     """
-    def __init__(self, url, load_btn_css_selector, waiting, scroll):
+    def __init__(self, url, load_btn_css_selector, waiting=None, scroll=None):
         """ Raise ValueError if url is not valid
         """ 
         self.url = url
@@ -69,26 +69,29 @@ class WebScraper:
             print('Scraping the URL')
             self.driver.get(self.url)
 
-            time.sleep(self.waiting)
+            if self.waiting:
+                time.sleep(self.waiting)
 
             try:
                 load_more_btn = self.driver.find_element_by_css_selector(self.load_btn_css_selector)
                 page_content = self.get_content()
-                old_scroll_count = 0
-                new_sroll_count = self.get_scroll_count()
+                if self.scroll:
+                    old_scroll_count = 0
+                    new_sroll_count = self.get_scroll_count()
            
                 while load_more_btn.is_displayed():
                     load_more_btn.click()
                     WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.load_btn_css_selector))).click()
 
-                    old_scroll_count = new_sroll_count
-                    new_sroll_count = self.get_scroll_count()
+                    if self.scroll:
+                        old_scroll_count = new_sroll_count
+                        new_sroll_count = self.get_scroll_count()
 
-                    print(old_scroll_count, new_sroll_count, self.scroll)
+                        print(old_scroll_count, new_sroll_count, self.scroll)
 
-                    if new_sroll_count > self.scroll:
-                        print('scroll limit!')
-                        break
+                        if new_sroll_count > self.scroll:
+                            print('scroll limit!')
+                            break
             except:
                 page_content = self.get_content()
 
@@ -126,8 +129,8 @@ def _start_task(tbl):
         task = WebScraper(
             url=tbl.url,
             load_btn_css_selector='.button.J_LoadMoreButton',
-            waiting=int(tbl.waiting),
-            scroll=int(tbl.scroll),
+            waiting=int(tbl.waiting) if tbl.waiting else None,
+            scroll=int(tbl.scroll) if tbl.scroll else None,
         )
 
 
