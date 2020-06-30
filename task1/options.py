@@ -2,13 +2,10 @@ import threading
 import time 
 import re
 
+import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-import requests
 
 from .models import tbl_page_data
 
@@ -18,24 +15,21 @@ class WebScraper:
 
         Attributes:
             url (str): web URL.
-            load_btn_css_selector (str): load button css selector.
             waiting (int): waiting time after page load.
             scroll (int): max scroll height to be scraped.
     """
-    def __init__(self, url, load_btn_css_selector, waiting, scroll):
+    def __init__(self, url, waiting, scroll):
         """ Raise ValueError if url is not valid
         """ 
         self.url = url
-        self.load_btn_css_selector = load_btn_css_selector
         self.waiting = waiting
         self.scroll = scroll
-        self.options = FirefoxOptions()
-        self.options.add_argument('--incognito')
-        self.options.add_argument('--headless')
+        options = FirefoxOptions()
+        options.add_argument('--incognito')
+        options.add_argument('--headless')
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
-
 
     def valid_url(self, url):
         """Validate URLs, return True if url is True
@@ -52,8 +46,22 @@ class WebScraper:
 
         return res is not None
 
-    def get_scroll_count(self):
-        return int(self.driver.execute_script("return document.documentElement.scrollHeight"))
+    def scroll_down(self, current_scroll):
+        return self.driver.execute_script("window.scroll({top: " + str(int(current_scroll + 100)) + ", left: 100, behavior: 'smooth'});")
+
+    def get_scroll_top(self):
+        return int(self.driver.execute_script("""
+            if (window.pageYOffset != undefined) {
+                return pageYOffset;
+            } else {
+                var sx, sy, d = document,
+                    r = d.documentElement,
+                    b = d.body;
+                sx = r.scrollLeft || b.scrollLeft || 0;
+                sy = r.scrollTop || b.scrollTop || 0;
+                return sy;
+            }
+        """))
 
     def get_content(self):
         return str(BeautifulSoup(self.driver.page_source, 'html.parser'))
@@ -71,36 +79,35 @@ class WebScraper:
 
             time.sleep(self.waiting)
 
-            try:
-                load_more_btn = self.driver.find_element_by_css_selector(self.load_btn_css_selector)
-                page_content = self.get_content()
-                old_scroll_count = 0
-                new_sroll_count = self.get_scroll_count()
-           
-                while load_more_btn.is_displayed():
-                    load_more_btn.click()
-                    WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.load_btn_css_selector))).click()
+            page_content = self.get_content()
+            old_scroll_top = -1
+            new_scroll_top = self.get_scroll_top()
 
-                    old_scroll_count = new_sroll_count
-                    new_sroll_count = self.get_scroll_count()
+            while new_scroll_top < self.scroll:
+                if old_scroll_top == new_scroll_top:
+                    time.sleep(self.waiting)
+                    new_scroll_top = self.get_scroll_top()
 
-                    print(old_scroll_count, new_sroll_count, self.scroll)
+                    if old_scroll_top == new_scroll_top:
+                        break;
 
-                    if new_sroll_count > self.scroll:
-                        print('scroll limit!')
-                        break
-            except:
-                page_content = self.get_content()
+                print(old_scroll_top, new_scroll_top, self.scroll)
+
+                self.scroll_down(self.scroll)
+
+                old_scroll_top = new_scroll_top
+                new_scroll_top = self.get_scroll_top()
+            print(old_scroll_top, new_scroll_top, self.scroll)
+
+            page_content = self.get_content()
 
             print('URL scraped!')
 
         except Exception as ex:
             return page_content, repr(ex), False
+
         finally:
-            try:
-                self.driver.quit()
-            except:
-                pass
+            self.driver.quit()
 
         return page_content, None, True
 
@@ -125,7 +132,6 @@ def _start_task(tbl):
 
         task = WebScraper(
             url=tbl.url,
-            load_btn_css_selector='.button.J_LoadMoreButton',
             waiting=int(tbl.waiting),
             scroll=int(tbl.scroll),
         )
