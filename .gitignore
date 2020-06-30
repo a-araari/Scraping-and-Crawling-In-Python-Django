@@ -3,3 +3,5 @@
 
 # project migrations
 **/migrations
+
+db.sqlite3
