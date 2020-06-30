@@ -15,13 +15,11 @@ def get_auto_generated_task_id():
 
 
 class tbl_page_data(models.Model):
-    PENDING_STATUS = 'pending'
     PROCESSING_STATUS = 'processing'
     SUCCESS_STATUS = 'success'
     ERROR_STATUS = 'error'
 
     STATUS_CHOICES = {
-        (PENDING_STATUS, 'pending'),
         (PROCESSING_STATUS, 'processing'),
         (SUCCESS_STATUS, 'success'),
         (ERROR_STATUS, 'error'),
