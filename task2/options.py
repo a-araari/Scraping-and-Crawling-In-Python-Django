@@ -34,7 +34,7 @@ class Crawl:
         self.options.add_argument('--headless')
 
         print('creating driver')
-        self.driver = webdriver.Firefox(executable_path='C:\\Users\\Q\\Desktop\\geckodriver.exe', options=self.options)
+        self.driver = webdriver.Firefox(options=self.options)
         print('driver created')
 
     def get_url(self, link):
