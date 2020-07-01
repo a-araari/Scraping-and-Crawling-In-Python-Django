@@ -1,5 +1,6 @@
 import threading
 import time
+import logging
 
 import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -12,10 +13,13 @@ from collections import deque
 from .models import tbl_crawl_task, tbl_crawl_task_data
 
 
+logger = logging.getLogger(__name__)
+
+
 class Crawl:
     def __init__(self, url, limit, waiting, scroll):
         self.url = url
-        self.limit = int(limit) # if limit is not None else None
+        self.limit = int(limit)
         self.waiting = int(waiting)
         self.scroll = int(scroll)
         self.count = 1
