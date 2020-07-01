@@ -73,10 +73,12 @@ class WebScraper:
         return resp == 'complete'
 
     def wait_for_page_load(self):
-        print(f'waiting for page to be loaded')
-        wait = WebDriverWait(self.driver, 20)
-        wait.until(self.is_page_loaded)
-
+        try:
+            print(f'waiting for page to be loaded')
+            wait = WebDriverWait(self.driver, 30)
+            wait.until(self.is_page_loaded)
+        except:
+            pass
         print(f'waiting after page load for {self.waiting}\'s')
         time.sleep(self.waiting)
 
