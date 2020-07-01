@@ -64,7 +64,7 @@ class WebScraper:
         """))
 
     def get_content(self):
-        return str(BeautifulSoup(self.driver.page_source, 'html.parser'))
+        return str(BeautifulSoup(self.driver.page_source, 'html.parser').prettify())
 
     def start_scraping(self):
         print('Creating driver..')
