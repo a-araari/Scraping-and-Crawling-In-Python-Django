@@ -15,7 +15,7 @@ from .models import tbl_crawl_task, tbl_crawl_task_data
 class Crawl:
     def __init__(self, url, limit, waiting, scroll):
         self.url = url
-        self.limit = int(limit)
+        self.limit = int(limit) if limit is not None else None
         self.waiting = int(waiting)
         self.scroll = int(scroll)
         self.count = 1
@@ -34,7 +34,7 @@ class Crawl:
         self.options.add_argument('--headless')
 
         print('creating driver')
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Firefox(executable_path='C:\\Users\\Q\\Desktop\\geckodriver.exe', options=self.options)
         print('driver created')
 
     def get_url(self, link):
@@ -120,7 +120,7 @@ class Crawl:
         return soup
 
     def _crawl(self, soup, save, tbl, count=0):
-        if self.count >= self.limit or soup is None:
+        if self.limit is not None and self.count >= self.limit or soup is None:
             print(f'limit={self.limit} reached!')
             return
 
@@ -128,7 +128,7 @@ class Crawl:
         saved_links = list()
 
         for sub_link in links:
-            if self.count > self.limit:
+            if self.limit is not None and self.count > self.limit:
                 break
 
             sub_url, internal = self.get_url(sub_link)
@@ -145,11 +145,11 @@ class Crawl:
             save(tbl, valid_url, tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE, status_code, depth_level)
             saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
 
-        if self.count >= self.limit:
+        if self.limit is not None and self.count >= self.limit:
             return
 
         for sub_link_dict in saved_links:
-            if self.count >= self.limit:
+            if self.limit is not None and self.count >= self.limit:
                 return
 
             if not sub_link_dict['internal']:

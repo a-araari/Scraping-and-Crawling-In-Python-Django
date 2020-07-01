@@ -4,6 +4,7 @@ import re
 
 import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
@@ -66,6 +67,21 @@ class WebScraper:
     def get_content(self):
         return str(BeautifulSoup(self.driver.page_source, 'html.parser').prettify())
 
+    def is_page_loaded(self, arg):
+        resp = self.driver.execute_script('return document.readyState')
+        print('resp:', resp)
+        return resp == 'complete'
+
+    def wait_for_page_load(self):
+        print(f'waiting for page to be loaded')
+        wait = WebDriverWait(self.driver, 20)
+        wait.until(self.is_page_loaded)
+
+        print(f'waiting after page load for {self.waiting}\'s')
+        time.sleep(self.waiting)
+
+
+
     def start_scraping(self):
         print('Creating driver..')
         self.driver = webdriver.Firefox(options=self.options)
@@ -77,27 +93,28 @@ class WebScraper:
             print('Scraping the URL')
             self.driver.get(self.url)
 
-            time.sleep(self.waiting)
+            self.wait_for_page_load()
 
             page_content = self.get_content()
+            print(f'page content contain {len(page_content)} characters')
             old_scroll_top = -1
             new_scroll_top = self.get_scroll_top()
+            print(f'Initial page scroll count: {new_scroll_top} ')
 
             while new_scroll_top < self.scroll:
+                print('-'*20)
                 if old_scroll_top == new_scroll_top:
-                    time.sleep(self.waiting)
-                    new_scroll_top = self.get_scroll_top()
-
-                    if old_scroll_top == new_scroll_top:
-                        break;
-
-                print(old_scroll_top, new_scroll_top, self.scroll)
+                    break;
 
                 self.scroll_down(self.scroll)
 
+                self.wait_for_page_load()
+
                 old_scroll_top = new_scroll_top
                 new_scroll_top = self.get_scroll_top()
-            print(old_scroll_top, new_scroll_top, self.scroll)
+                print(f'New scroll count: {new_scroll_top}')
+
+            print(f'Last page scroll count: {new_scroll_top} ')
 
             page_content = self.get_content()
 
