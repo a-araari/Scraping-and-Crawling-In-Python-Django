@@ -132,23 +132,26 @@ class Crawl:
         saved_links = list()
 
         for sub_link in links:
-            if self.count > self.limit:
-                break
+            try:
+                if self.count > self.limit:
+                    break
 
-            sub_url, internal = self.get_url(sub_link)
+                sub_url, internal = self.get_url(sub_link)
 
-            if sub_url in self.processed_urls or sub_url.endswith('#'):
-                self.count -= 1
-                continue
+                if sub_url in self.processed_urls or sub_url.endswith('#'):
+                    self.count -= 1
+                    continue
 
-            print('processing', sub_url)
-            self.processed_urls.append(sub_url)
-            depth_level = self.get_depth(sub_url)
-            sub_soup, status_code, valid_url = self.get_page(sub_url)
+                print('processing', sub_url)
+                self.processed_urls.append(sub_url)
+                depth_level = self.get_depth(sub_url)
+                sub_soup, status_code, valid_url = self.get_page(sub_url)
 
-            save(tbl, valid_url, tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE, status_code, depth_level)
-            saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
-
+                save(tbl, valid_url, tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE, status_code, depth_level)
+                saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
+            except:
+                pass
+                
         if self.count >= self.limit:
             return
 
