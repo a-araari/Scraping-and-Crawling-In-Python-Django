@@ -2,6 +2,7 @@ import threading
 import time
 import logging
 import traceback
+import random
 
 import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -162,11 +163,24 @@ def save(tbl, url, link_type, status_code, depth_level):
     )
     tbl_data.save()
 
+
+max_same_time = 2
+
+
 def _start_crawl_task(tbl):
     """
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
     """
+    pending_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    while pending_tasks > 2:
+        print(pending_tasks, tbl.task_id, 'waiting')
+        time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
+        pending_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+        
+    tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
+    tbl.save()
+
     status_code = None
     try:
         page = requests.get(tbl.url)

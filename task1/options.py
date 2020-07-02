@@ -2,6 +2,7 @@ import threading
 import traceback
 import time 
 import re
+import random
 
 import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -50,8 +51,8 @@ class WebScraper:
 
         return res is not None
 
-    def scroll_down(self, current_scroll):
-        return self.driver.execute_script("window.scroll({top: " + str(int(current_scroll + 100)) + ", left: 100, behavior: 'smooth'});")
+    def scroll_down(self):
+        return self.driver.execute_script("window.scroll({top: " + str(int(self.scroll * 40)) + ", left: 0, behavior: 'smooth'});")
 
     def get_scroll_top(self):
         return int(self.driver.execute_script("""
@@ -65,7 +66,7 @@ class WebScraper:
                 sy = r.scrollTop || b.scrollTop || 0;
                 return sy;
             }
-        """))
+        """) / 40)
 
     def get_content(self):
         return str(BeautifulSoup(self.driver.page_source, 'html.parser').prettify())
@@ -109,7 +110,7 @@ class WebScraper:
                 if old_scroll_top == new_scroll_top:
                     break;
 
-                self.scroll_down(self.scroll)
+                self.scroll_down()
 
                 self.wait_for_page_load()
 
@@ -134,11 +135,24 @@ class WebScraper:
         return page_content, None, True
 
 
+
+max_same_time = 2
+
+
 def _start_task(tbl):
     """
     Task work goes here!
     tbl saved each time status_code or status_process changed
     """
+
+    pending_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+    while pending_tasks > max_same_time:
+        print(pending_tasks, tbl.task_id, 'waiting')
+        time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
+        pending_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+        
+    tbl.status_process = tbl_page_data.PROCESSING_STATUS
+    tbl.save()
     try:
         # Check page status before scraping
         page = requests.get(tbl.url)
