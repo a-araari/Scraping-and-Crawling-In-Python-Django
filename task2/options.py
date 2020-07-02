@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 from collections import deque
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
+from task1.models import tbl_page_data
 from task1.options import WebScraper
 
 
@@ -166,17 +167,20 @@ def save(tbl, url, link_type, status_code, depth_level):
 
 max_same_time = 2
 
+def get_pending_count():
+    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+
 
 def _start_crawl_task(tbl):
     """
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
     """
-    pending_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    pending_tasks = get_pending_count()
     while pending_tasks > 2:
         print(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
-        pending_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+        pending_tasks = get_pending_count()
         
     tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
     tbl.save()

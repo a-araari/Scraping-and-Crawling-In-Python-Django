@@ -11,6 +11,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 
 from .models import tbl_page_data
+from task2.models import tbl_crawl_task
 
 
 class WebScraper:
@@ -139,17 +140,20 @@ class WebScraper:
 max_same_time = 2
 
 
+def get_pending_count():
+    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+
 def _start_task(tbl):
     """
     Task work goes here!
     tbl saved each time status_code or status_process changed
     """
 
-    pending_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+    pending_tasks = get_pending_count()
     while pending_tasks > max_same_time:
         print(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
-        pending_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+        pending_tasks = get_pending_count()
         
     tbl.status_process = tbl_page_data.PROCESSING_STATUS
     tbl.save()
