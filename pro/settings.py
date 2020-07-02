@@ -132,6 +132,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+}
+
+'''
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -149,4 +156,4 @@ LOGGING = {
             'propagate': True,
         },
     },
-}
+}'''
