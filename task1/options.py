@@ -19,7 +19,7 @@ class WebScraper:
             waiting (int): waiting time after page load.
             scroll (int): max scroll height to be scraped.
     """
-    def __init__(self, url, waiting, scroll):
+    def __init__(self, url, waiting, scroll, driver=None):
         """ Raise ValueError if url is not valid
         """ 
         self.url = url
@@ -28,6 +28,8 @@ class WebScraper:
         self.options = FirefoxOptions()
         self.options.add_argument('--incognito')
         self.options.add_argument('--headless')
+        self.driver = driver
+        self.quit = driver is None
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
@@ -82,11 +84,9 @@ class WebScraper:
         print(f'waiting after page load for {self.waiting}\'s')
         time.sleep(self.waiting)
 
-
-
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Firefox(options=self.options) if self.driver is None else None
         print('Driver created!')
 
         page_content = ''
@@ -126,9 +126,11 @@ class WebScraper:
             return page_content, repr(ex), False
 
         finally:
-            self.driver.quit()
+            if self.quit:
+                self.driver.quit()
 
         return page_content, None, True
+
 
 def _start_task(tbl):
     """
@@ -174,6 +176,7 @@ def _start_task(tbl):
 
     finally:
         tbl.save()
+
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
