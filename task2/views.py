@@ -32,7 +32,13 @@ class CrawlSetView(APIView):
             scroll = request.GET['scroll']
             limit = request.GET['limit']
 
-            tbl = tbl_crawl_task(url=url, limit=limit, waiting=waiting, scroll=scroll)
+            tbl = tbl_crawl_task(
+                url=url,
+                limit=limit,
+                waiting=waiting,
+                scroll=scroll,
+                pending_task=tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count(),
+            )
             tbl.save()
 
             # starting the crawl task in a seperate Thread
@@ -42,7 +48,7 @@ class CrawlSetView(APIView):
                     'data': {
                         'task_id': tbl.task_id,
                         'url': tbl.url,
-                        'pending_task': tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() - 1,
+                        'pending_task': tbl.pending_task,
                     }
                 })
         except Exception as e:
@@ -74,7 +80,7 @@ class CrawlGetView(APIView):
                     "created_at": tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": tbl.task_id,
                     "url": tbl.url,
-                    "pending_task": tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() - 1,
+                    "pending_task": tbl.pending_task,
                     "status_process": tbl.status_process,
                 }
             }

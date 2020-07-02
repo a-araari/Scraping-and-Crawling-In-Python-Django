@@ -37,7 +37,12 @@ class PageDataSetView(APIView):
             scroll = request.GET['scroll']
 
             # saving the task
-            tbl = tbl_page_data(url=url, waiting=waiting, scroll=scroll)
+            tbl = tbl_page_data(
+                url=url,
+                waiting=waiting,
+                scroll=scroll,
+                pending_task=tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count(),
+            )
             tbl.save()
 
             # starting the task in a seperate Thread
@@ -49,7 +54,7 @@ class PageDataSetView(APIView):
                     'data': {
                         'task_id': tbl.task_id,
                         'url': tbl.url,
-                        'pending_task': tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() - 1,
+                        'pending_task': tbl.pending_task,
                     }
                 })
         except Exception as e:
@@ -80,7 +85,7 @@ class PageDataGetView(APIView):
                     "created_at":tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": task_id,
                     "url": tbl.url,
-                    "pending_task" : tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() - 1,# (show us the total number of pending task in queue forthis API)
+                    "pending_task" : tbl.pending_task,# (show us the total number of pending task in queue forthis API)
                     "status_process": tbl.status_process,
                     "page_status": tbl.status_code # {page HTTP status  status},(exe: 200,404,500,505 or null onstatus_process=processing)
                 }
