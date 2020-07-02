@@ -162,11 +162,17 @@ class Crawl:
             self._crawl(sub_link_dict['sub_soup'], save, tbl, count=self.count)
 
     def start_crawling(self, save, tbl):
-        soup, status_code, valid_url = self.get_page(self.url)
-        if status_code is not None:
-            self._crawl(soup, save, tbl)
-            
-        self.driver.quit()
+        try:
+            soup, status_code, valid_url = self.get_page(self.url)
+            if status_code is not None:
+                self._crawl(soup, save, tbl)
+        except Exception as e:
+            # passing the exception(just to quit the driver)
+            raise e
+        finally:
+
+            self.driver.quit()
+
         return status_code
 
 
@@ -204,6 +210,7 @@ def _start_crawl_task(tbl):
         tbl.save()
     except Exception as e:
         print(repr(e))
+        tbl.status_process = tbl_crawl_task.ERROR_STATUS
         tbl.error_msg = repr(e)
         tbl.status_code = status_code
         tbl.save()
