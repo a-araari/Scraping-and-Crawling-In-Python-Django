@@ -43,6 +43,8 @@ class tbl_page_data(models.Model):
     waiting = models.IntegerField(null=True, blank=True)
     # scroll in page 
     scroll = models.IntegerField(null=True, blank=True)
+    # pending task index
+    pending_task = models.IntegerField()
     
     def __str__(self):
         return f'{self.task_id}: {self.url}'
