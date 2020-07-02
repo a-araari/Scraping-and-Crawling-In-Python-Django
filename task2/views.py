@@ -17,6 +17,10 @@ def check_key_validation(key):
         raise ValueError('Unvalid validation key!')
 
 
+def get_pending_task_count():
+    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
+
+
 class CrawlSetView(APIView):
     # Args: ?url & limit & waiting & scroll & validation_key
     def get(self, request, format=None):
@@ -37,7 +41,7 @@ class CrawlSetView(APIView):
                 limit=limit,
                 waiting=waiting,
                 scroll=scroll,
-                pending_task=tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count(),
+                pending_task=get_pending_task_count(),
             )
             tbl.save()
 

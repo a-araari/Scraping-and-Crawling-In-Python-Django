@@ -17,6 +17,10 @@ def check_key_validation(key):
         raise ValueError('Unvalid validation key!')
 
 
+def get_pending_task_count():
+    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS).count()
+
+
 class PageDataSetView(APIView):
     """
     Set API View for creating scrape tasks
@@ -41,7 +45,7 @@ class PageDataSetView(APIView):
                 url=url,
                 waiting=waiting,
                 scroll=scroll,
-                pending_task=tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count(),
+                pending_task=get_pending_task_count(),
             )
             tbl.save()
 
