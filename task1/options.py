@@ -1,4 +1,5 @@
 import threading
+import traceback
 import time 
 import re
 
@@ -71,22 +72,22 @@ class WebScraper:
 
     def is_page_loaded(self, arg):
         resp = self.driver.execute_script('return document.readyState')
-        print('resp:', resp)
+        # print('resp:', resp)
         return resp == 'complete'
 
     def wait_for_page_load(self):
         try:
-            print(f'waiting for page to be loaded')
+            # print(f'waiting for page to be loaded')
             wait = WebDriverWait(self.driver, 30)
             wait.until(self.is_page_loaded)
         except:
             pass
-        print(f'waiting after page load for {self.waiting}\'s')
+        # print(f'waiting after page load for {self.waiting}\'s')
         time.sleep(self.waiting)
 
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Firefox(options=self.options) if self.driver is None else None
+        self.driver = webdriver.Firefox(options=self.options) if self.driver is None else self.driver
         print('Driver created!')
 
         page_content = ''
@@ -98,13 +99,13 @@ class WebScraper:
             self.wait_for_page_load()
 
             page_content = self.get_content()
-            print(f'page content contain {len(page_content)} characters')
+            # print(f'page content contain {len(page_content)} characters')
             old_scroll_top = -1
             new_scroll_top = self.get_scroll_top()
-            print(f'Initial page scroll count: {new_scroll_top} ')
+            # print(f'Initial page scroll count: {new_scroll_top} ')
 
             while new_scroll_top < self.scroll:
-                print('-'*20)
+                # print('-'*20)
                 if old_scroll_top == new_scroll_top:
                     break;
 
@@ -123,6 +124,7 @@ class WebScraper:
             print('URL scraped!')
 
         except Exception as ex:
+            traceback.print_exc()
             return page_content, repr(ex), False
 
         finally:
