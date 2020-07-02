@@ -150,7 +150,7 @@ def _start_task(tbl):
     """
 
     pending_tasks = get_pending_count()
-    while pending_tasks > max_same_time:
+    while pending_tasks >= max_same_time:
         print(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
         pending_tasks = get_pending_count()
