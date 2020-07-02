@@ -1,6 +1,7 @@
 import threading
 import time
 import logging
+import traceback
 
 import requests
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -11,9 +12,11 @@ from urllib.parse import urlparse
 from collections import deque
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
+from task1.options import WebScraper
 
 
 logger = logging.getLogger(__name__)
+
 
 
 class Crawl:
@@ -26,10 +29,10 @@ class Crawl:
 
         # extract base url to resolve relative
         self.linksparts = urlsplit(url)
-        self.base = '{0.netloc}'.format(self.linksparts) # e.g: www.youtube.com
-        self.strip_base = self.base.replace('www.', '') # e.g: youtube.com
-        self.base_url = '{0.scheme}://{0.netloc}'.format(self.linksparts)  # e.g: https://www.youtube.com
-        # self.path = url[:url.rfind('/')+1] if '/' in self.linksparts.path else url
+        self.base = '{0.netloc}'.format(self.linksparts)
+        self.strip_base = self.base.replace('www.', '')
+        self.base_url = '{0.scheme}://{0.netloc}'.format(self.linksparts)
+        self.path = url[:url.rfind('/')+1] if '/' in self.linksparts.path else url
 
         self.processed_urls = []
 
@@ -41,8 +44,8 @@ class Crawl:
         self.driver = webdriver.Firefox(options=self.options)
         print('driver created')
 
+
     def get_url(self, link):
-        self.count += 1
         # extract link url from the anchor
         anchor = link.attrs['href'] if 'href' in link.attrs else ''
         anchor = anchor.replace('www.', '')
@@ -57,30 +60,7 @@ class Crawl:
             # External url
             return anchor, False
 
-    def get_depth(self, url):
-        count = url.replace('//', '').count('/')
-        return  count - 1 if url.endswith('/') else count 
-
-    def get_soup(self):
-        return BeautifulSoup(self.driver.page_source, 'html.parser')
-
-    def scroll_down(self, current_scroll):
-        return self.driver.execute_script("window.scroll({top: " + str(int(current_scroll + 100)) + ", left: 100, behavior: 'smooth'});")
-
-    def get_scroll_top(self):
-        return int(self.driver.execute_script("""
-            if (window.pageYOffset != undefined) {
-                return pageYOffset;
-            } else {
-                var sx, sy, d = document,
-                    r = d.documentElement,
-                    b = d.body;
-                sx = r.scrollLeft || b.scrollLeft || 0;
-                sy = r.scrollTop || b.scrollTop || 0;
-                return sy;
-            }
-        """))
-
+    # return status_code, url
     def get_page(self, url):
         if not url.startswith('http'):
             url = 'https:' + ('//' if not url.startswith('//') else '') + url
@@ -89,95 +69,98 @@ class Crawl:
         url = response.url
         code = response.status_code
 
-        soup = self.get_full_page(url)
+        return code, url
 
-        return soup, code, url
-
+    # return soup, error_text, success
     def get_full_page(self, url):
-        self.driver.get(url)
+        print(type(self.driver))
+        task = WebScraper(
+            url=url,
+            waiting=self.waiting,
+            scroll=self.scroll,
+            driver=self.driver
+        )
 
-        soup = self.get_soup()
-        old_scroll_top = -1
-        new_scroll_top = self.get_scroll_top()
+        page_content, error_text, success = task.start_scraping()
 
-        while new_scroll_top < self.scroll:
-            if old_scroll_top == new_scroll_top:
-                time.sleep(self.waiting)
-                new_scroll_top = self.get_scroll_top()
+        return BeautifulSoup(page_content, 'html.parser'), error_text, success
 
-                if old_scroll_top == new_scroll_top:
-                    break;
-
-            print(old_scroll_top, new_scroll_top, self.scroll)
-
-            self.scroll_down(self.scroll)
-
-            old_scroll_top = new_scroll_top
-            new_scroll_top = self.get_scroll_top()
-
-        print(old_scroll_top, new_scroll_top, self.scroll)
-
-        soup = self.get_soup()
-
-        print('URL scraped!')
-
-        return soup
-
-    def _crawl(self, soup, save, tbl, count=0):
-        if self.count >= self.limit or soup is None:
+    def _crawl(self, soup, save, tbl, count=0, dpt=0):
+        if count >= self.limit or soup is None:
             print(f'limit={self.limit} reached!')
             return
 
         links = soup.find_all('a')
         saved_links = list()
 
+        print('#'*70, ' '*5, dpt, ' '*5, '#'*70)
+
         for sub_link in links:
             try:
-                if self.count > self.limit:
+                if count > self.limit:
                     break
 
                 sub_url, internal = self.get_url(sub_link)
-
                 if sub_url in self.processed_urls or sub_url.endswith('#'):
-                    self.count -= 1
                     continue
-
-                print('processing', sub_url)
+                print('processing:', sub_url)
                 self.processed_urls.append(sub_url)
-                depth_level = self.get_depth(sub_url)
-                sub_soup, status_code, valid_url = self.get_page(sub_url)
 
-                save(tbl, valid_url, tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE, status_code, depth_level)
-                saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
-            except:
-                pass
-                
-        if self.count >= self.limit:
-            return
+                link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
+
+                code, valid_url = self.get_page(sub_url)
+                sub_url = valid_url
+
+                try:
+                    if code in range(200, 300):
+                        sub_soup, error_msg, succ = self.get_full_page(sub_url)
+                        print('scrape succ:', succ)
+                        if succ:
+                            save(tbl, sub_url, link_type, code, dpt)
+                            saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
+                            count += 1
+                except:
+                    save(tbl, sub_url, link_type, code, dpt)
+
+            except Exception as e:
+                print('sublink exc:', repr(e))
+                # traceback.print_exc()
 
         for sub_link_dict in saved_links:
-            if self.count >= self.limit:
+            if count >= self.limit:
                 return
 
             if not sub_link_dict['internal']:
                 continue
 
-            self._crawl(sub_link_dict['sub_soup'], save, tbl, count=self.count)
+            self._crawl(sub_link_dict['soup'], save, tbl, count=count, dpt=dpt+1)
+
 
     def start_crawling(self, save, tbl):
-        try:
-            soup, status_code, valid_url = self.get_page(self.url)
-            if status_code is not None:
-                self._crawl(soup, save, tbl)
-        except Exception as e:
-            # passing the exception(just to quit the driver)
-            raise e
-        finally:
+        soup, error_text, success = self.get_full_page(tbl.url)
 
+        try:
+            if success:
+                self._crawl(soup, save, tbl)
+                return True, ''
+            else:
+                return False, error_text
+        finally:
             self.driver.quit()
 
-        return status_code
 
+def save(tbl, url, link_type, status_code, depth_level):
+    print('saving', url, ':', status_code, tbl)
+    if status_code is None:
+        status_code = -1
+    tbl_data = tbl_crawl_task_data(
+        task_id=tbl,
+        url=url,
+        link_type=link_type,
+        status_code=status_code,
+        depth_level=depth_level
+    )
+    tbl_data.save()
 
 def _start_crawl_task(tbl):
     """
@@ -186,37 +169,35 @@ def _start_crawl_task(tbl):
     """
     status_code = None
     try:
-        crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
+        page = requests.get(tbl.url)
+        tbl.status_code = page.status_code
 
-        def save(task_id, url, link_type, status_code, depth_level):
-            print('saving', url, ':', status_code)
-            if status_code is None:
-                status_code = -1
-            tbl_data = tbl_crawl_task_data(
-                task_id=task_id,
-                url=url,
-                link_type=link_type,
-                status_code=status_code,
-                depth_level=depth_level
-            )
-            tbl_data.save()
+        if page.status_code in range(200, 300):
+            crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
 
-        status_code = crw.start_crawling(save, tbl)
-        tbl.status_code = status_code
-
-        if status_code is not None and status_code in range(200, 300):
-            tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+            succ, error_msg = crw.start_crawling(save, tbl)
+            if succ:
+                tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+            else:
+                tbl.status_process = tbl_crawl_task.ERROR_STATUS
+                tbl.error_msg = error_msg
+            
         else:
             tbl.status_process = tbl_crawl_task.ERROR_STATUS
-            tbl.error_msg = f'Cannot connect to {tbl.url}. status code: {status_code}'
+            tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
 
-        tbl.save()
+        print(tbl.error_msg)
+
     except Exception as e:
-        print(repr(e))
         tbl.status_process = tbl_crawl_task.ERROR_STATUS
         tbl.error_msg = repr(e)
         tbl.status_code = status_code
+        print(repr(e))
+        traceback.print_exc()
+
+    finally:
         tbl.save()
+
 
 def start_crawl_task(tbl):
     t = threading.Thread(target=_start_crawl_task, args=[tbl])
