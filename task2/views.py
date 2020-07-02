@@ -30,7 +30,7 @@ class CrawlSetView(APIView):
             url = request.GET['url']
             waiting = request.GET['waiting']
             scroll = request.GET['scroll']
-            limit = request.GET.get('limit', None)
+            limit = request.GET.['limit']
 
             tbl = tbl_crawl_task(url=url, limit=limit, waiting=waiting, scroll=scroll)
             tbl.save()
