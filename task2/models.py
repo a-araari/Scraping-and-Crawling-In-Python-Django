@@ -15,11 +15,13 @@ def get_auto_generated_task_id():
 
 
 class tbl_crawl_task(models.Model):
+    NONE_STATUS = 'none'
     PROCESSING_STATUS = 'processing'
     SUCCESS_STATUS = 'success'
     ERROR_STATUS = 'error'
 
     STATUS_CHOICES = {
+        (NONE_STATUS, 'none'),
         (PROCESSING_STATUS, 'processing'),
         (SUCCESS_STATUS, 'success'),
         (ERROR_STATUS, 'error'),
@@ -30,7 +32,7 @@ class tbl_crawl_task(models.Model):
     # single url
     url = models.URLField(max_length=200)
     # processing
-    status_process = models.CharField(max_length=50, choices=STATUS_CHOICES, default=PROCESSING_STATUS)
+    status_process = models.CharField(max_length=50, choices=STATUS_CHOICES, default=NONE_STATUS)
     # null
     error_msg = models.CharField(max_length=255, null=True, blank=True)
     # Task create time

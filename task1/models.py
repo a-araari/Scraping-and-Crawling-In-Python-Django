@@ -15,11 +15,13 @@ def get_auto_generated_task_id():
 
 
 class tbl_page_data(models.Model):
+    NONE_STATUS = 'none'
     PROCESSING_STATUS = 'processing'
     SUCCESS_STATUS = 'success'
     ERROR_STATUS = 'error'
 
     STATUS_CHOICES = {
+        (NONE_STATUS, 'none'),
         (PROCESSING_STATUS, 'processing'),
         (SUCCESS_STATUS, 'success'),
         (ERROR_STATUS, 'error'),
@@ -34,7 +36,7 @@ class tbl_page_data(models.Model):
     # null
     page_content = models.TextField(null=True, blank=True)
     # processing
-    status_process = models.CharField(max_length=50, choices=STATUS_CHOICES, default=PROCESSING_STATUS)
+    status_process = models.CharField(max_length=50, choices=STATUS_CHOICES, default=NONE_STATUS)
     # null
     error_msg = models.CharField(max_length=255, null=True, blank=True)
     # Task create time
