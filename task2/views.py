@@ -81,7 +81,7 @@ class CrawlGetView(APIView):
                     "Task_id": tbl.task_id,
                     "url": tbl.url,
                     "pending_task": tbl.pending_task,
-                    "status_process": tbl.status_process,
+                    "status_process": 'processing' if tbl.status_process==tbl_crawl_task.NONE_STATUS else tbl.status_process,
                 }
             }
             if tbl.status_process == tbl_crawl_task.ERROR_STATUS:
