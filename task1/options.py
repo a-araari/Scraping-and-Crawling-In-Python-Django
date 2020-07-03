@@ -137,7 +137,7 @@ class WebScraper:
 
 
 
-max_same_time = 2
+max_same_time = 1
 
 
 def get_pending_count():

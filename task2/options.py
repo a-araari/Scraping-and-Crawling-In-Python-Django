@@ -165,7 +165,7 @@ def save(tbl, url, link_type, status_code, depth_level):
     tbl_data.save()
 
 
-max_same_time = 2
+max_same_time = 1
 
 def get_pending_count():
     return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
