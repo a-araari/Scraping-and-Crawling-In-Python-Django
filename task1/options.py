@@ -5,6 +5,7 @@ import re
 import random
 
 import requests
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
@@ -171,12 +172,22 @@ def _start_task(tbl):
 
             return
 
-        task = WebScraper(
-            url=tbl.url,
-            waiting=int(tbl.waiting),
-            scroll=int(tbl.scroll),
-        )
-
+        re_counter = 0
+        done = False
+        task = None
+        while (not done):
+            try:
+                task = WebScraper(
+                    url=tbl.url,
+                    waiting=int(tbl.waiting),
+                    scroll=int(tbl.scroll),
+                )
+                done = True
+                re_counter += 1
+            except WebDriverException as e:
+                if re_counter >= 5:
+                    raise e
+                done = False
 
         page_content, error_text, success = task.start_scraping()
 
@@ -188,7 +199,6 @@ def _start_task(tbl):
             tbl.error_msg = error_text
         
         tbl.status_process = tbl_page_data.SUCCESS_STATUS if success else tbl_page_data.ERROR_STATUS
-
 
     except Exception as e:
         tbl.status_process = tbl_page_data.ERROR_STATUS
