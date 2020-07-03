@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class Crawl:
     def __init__(self, url, limit, waiting, scroll):
         self.url = url
-        self.limit = int(limit)
+        self.limit = int(limit) - 1
         self.waiting = int(waiting)
         self.scroll = int(scroll)
         self.count = 1
