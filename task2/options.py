@@ -38,7 +38,7 @@ class Crawl:
 
         self.processed_urls = []
 
-        self.options = FirefoxOptions()
+        self.options = Options()
         self.options.add_argument('--incognito')
         self.options.add_argument('--headless')
 
