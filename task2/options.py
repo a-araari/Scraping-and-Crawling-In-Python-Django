@@ -5,7 +5,7 @@ import traceback
 import random
 
 import requests
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urlsplit
@@ -43,7 +43,7 @@ class Crawl:
         self.options.add_argument('--headless')
 
         print('creating driver')
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options)
         print('driver created')
 
 

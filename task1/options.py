@@ -5,7 +5,7 @@ import re
 import random
 
 import requests
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -28,7 +28,7 @@ class WebScraper:
         self.url = url
         self.waiting = waiting
         self.scroll = scroll
-        self.options = FirefoxOptions()
+        self.options = Options()
         self.options.add_argument('--incognito')
         self.options.add_argument('--headless')
         self.driver = driver
@@ -89,7 +89,7 @@ class WebScraper:
 
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Firefox(options=self.options) if self.driver is None else self.driver
+        self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options) if self.driver is None else self.driver
         print('Driver created!')
 
         page_content = ''
