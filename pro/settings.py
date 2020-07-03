@@ -26,6 +26,9 @@ SECRET_KEY = '9t=6_#7j*k-=bc$ni@#5cl(a3rh3s!p+4a26)*b%-@g)z(3ufy'
 # Validation key for validate api requests
 VALIDATION_KEY = 'OEpotRjkg7UGxba6AfOUcIbNfNlvE9a1'
 
+# how many tasks can run in the same time
+RUNNING_TASKS_SIMULTANEOUSLY_COUNT = 1
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
