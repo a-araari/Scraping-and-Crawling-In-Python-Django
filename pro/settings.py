@@ -33,7 +33,7 @@ RUNNING_TASKS_SIMULTANEOUSLY_COUNT = 1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '167.172.143.55']
+ALLOWED_HOSTS = ['127.0.0.1', '167.172.143.55', '67.205.133.135']
 
 
 # Application definition
