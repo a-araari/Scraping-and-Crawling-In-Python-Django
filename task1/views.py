@@ -34,7 +34,7 @@ def validate_url(url):
 
 
 def validate_positive(n, rep):
-    if n is None or n < 0:
+    if n is None or type(n) is not int or n < 0:
         raise Exception(f'Unvalid Number: {rep}')
 
 class PageDataSetView(APIView):

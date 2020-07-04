@@ -33,7 +33,7 @@ def validate_url(url):
         raise Exception(f'Unvalid URL: {url}')
 
 def validate_positive(n, rep):
-    if n is None or n < 0:
+    if n is None or type(n) is not int or n < 0:
         raise Exception(f'Unvalid Number: {rep}')
 
 
