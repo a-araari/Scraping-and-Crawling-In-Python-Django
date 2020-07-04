@@ -28,7 +28,7 @@ validate = URLValidator()
 
 def validate_url(url):
     try:
-        validate(value)
+        validate(url)
     except ValidationError as e:
         raise Exception(f'Unvalid URL: {url}')
 
