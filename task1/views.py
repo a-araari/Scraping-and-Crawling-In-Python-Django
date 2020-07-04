@@ -34,8 +34,15 @@ def validate_url(url):
 
 
 def validate_positive(n, rep):
-    if n is None or type(n) is not int or n < 0:
+    try:
+        n = int(n)
+        if n is None or type(n) is not int or n < 0:
+            raise Exception(f'Unvalid Number: {rep}')
+    except:
         raise Exception(f'Unvalid Number: {rep}')
+
+    return n
+
 
 class PageDataSetView(APIView):
     """
@@ -54,10 +61,12 @@ class PageDataSetView(APIView):
             # getting query strings
             url = request.GET['url']
             validate_url(url)
+
             waiting = request.GET['waiting']
-            validate_positive(waiting, 'waiting')
+            waiting = validate_positive(waiting, 'waiting')
+
             scroll = request.GET['scroll']
-            validate_positive(scroll, 'scroll')
+            scroll = validate_positive(scroll, 'scroll')
 
             # saving the task
             tbl = tbl_page_data(

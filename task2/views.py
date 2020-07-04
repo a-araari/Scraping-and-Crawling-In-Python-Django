@@ -33,8 +33,14 @@ def validate_url(url):
         raise Exception(f'Unvalid URL: {url}')
 
 def validate_positive(n, rep):
-    if n is None or type(n) is not int or n < 0:
+    try:
+        n = int(n)
+        if n is None or type(n) is not int or n < 0:
+            raise Exception(f'Unvalid Number: {rep}')
+    except:
         raise Exception(f'Unvalid Number: {rep}')
+
+    return n
 
 
 class CrawlSetView(APIView):
@@ -49,12 +55,15 @@ class CrawlSetView(APIView):
 
             url = request.GET['url']
             validate_url(url)
+            
             waiting = request.GET['waiting']
-            validate_positive(waiting, 'waiting')
+            waiting = validate_positive(waiting, 'waiting')
+
             scroll = request.GET['scroll']
-            validate_positive(scroll, 'scroll')
+            scroll = validate_positive(scroll, 'scroll')
+
             limit = request.GET['limit']
-            validate_positive(limit, 'limit')
+            limit = validate_positive(limit, 'limit')
 
             tbl = tbl_crawl_task(
                 url=url,
