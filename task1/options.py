@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 from .models import tbl_page_data
-from task2.models import tbl_crawl_task
 
 
 class WebScraper:
@@ -139,7 +138,7 @@ class WebScraper:
 
 
 def get_pending_count():
-    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
 
 def _start_task(tbl):
     """
