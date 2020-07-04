@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -27,7 +29,7 @@ validate = URLValidator()
 def validate_url(url):
     try:
         validate(value)
-    except ValidationError, e:
+    except ValidationError as e:
         raise Exception(f'Unvalid URL: {url}')
 
 
