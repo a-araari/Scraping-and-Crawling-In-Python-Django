@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +10,7 @@ from .models import tbl_crawl_task, tbl_crawl_task_data
 from . import options
 
 
-def check_key_validation(key):
+def validate_key(key):
     """
     check secret key validation in the database
     raise exception if key is unvalid
@@ -21,6 +23,20 @@ def get_pending_task_count():
     return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
 
 
+validate = URLValidator()
+
+
+def validate_url(url):
+    try:
+        validate(value)
+    except ValidationError, e:
+        raise Exception(f'Unvalid URL: {url}')
+
+def validate_positive(n, rep):
+    if n is None or n < 0:
+        raise Exception(f'Unvalid Number: {rep}')
+
+
 class CrawlSetView(APIView):
     # Args: ?url & limit & waiting & scroll & validation_key
     def get(self, request, format=None):
@@ -29,12 +45,16 @@ class CrawlSetView(APIView):
         """
         try:
             secret_key = request.GET['validation_key']
-            check_key_validation(secret_key)
+            validate_key(secret_key)
 
             url = request.GET['url']
+            validate_url(url)
             waiting = request.GET['waiting']
+            validate_positive(waiting, 'waiting')
             scroll = request.GET['scroll']
+            validate_positive(scroll, 'scroll')
             limit = request.GET['limit']
+            validate_positive(limit, 'limit')
 
             tbl = tbl_crawl_task(
                 url=url,
@@ -58,7 +78,7 @@ class CrawlSetView(APIView):
         except Exception as e:
             return Response({
                     'data': {
-                        'error': repr(e),
+                        'error': str(e),
                     }
                 })
 
@@ -72,7 +92,7 @@ class CrawlGetView(APIView):
 
         try:
             secret_key = request.GET['validation_key']
-            check_key_validation(secret_key)
+            validate_key(secret_key)
 
             task_id = request.GET['task_id']
 

@@ -8,7 +8,7 @@ from .models import tbl_page_data
 from . import  options
 
 
-def check_key_validation(key):
+def validate_key(key):
     """
     check if secret key valid
     raise exception otherwise
@@ -20,6 +20,20 @@ def check_key_validation(key):
 def get_pending_task_count():
     return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS).count()
 
+
+validate = URLValidator()
+
+
+def validate_url(url):
+    try:
+        validate(value)
+    except ValidationError, e:
+        raise Exception(f'Unvalid URL: {url}')
+
+
+def validate_positive(n, rep):
+    if n is None or n < 0:
+        raise Exception(f'Unvalid Number: {rep}')
 
 class PageDataSetView(APIView):
     """
@@ -33,12 +47,15 @@ class PageDataSetView(APIView):
         try:
             #validate the secret key
             secret_key = request.GET['validation_key']
-            check_key_validation(secret_key)
+            validate_key(secret_key)
 
             # getting query strings
             url = request.GET['url']
+            validate_url(url)
             waiting = request.GET['waiting']
+            validate_positive(waiting, 'waiting')
             scroll = request.GET['scroll']
+            validate_positive(scroll, 'scroll')
 
             # saving the task
             tbl = tbl_page_data(
@@ -78,7 +95,7 @@ class PageDataGetView(APIView):
         """
         try:
             secret_key = request.GET['validation_key']
-            check_key_validation(secret_key)
+            validate_key(secret_key)
             
             task_id = request.GET['task_id']
 
