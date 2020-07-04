@@ -5,6 +5,7 @@ import traceback
 import random
 
 import requests
+from requests.exceptions import ConnectionError as rce
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -67,12 +68,14 @@ class Crawl:
     def get_page(self, url):
         if not url.startswith('http'):
             url = 'https:' + ('//' if not url.startswith('//') else '') + url
+        try:
+            response = requests.get(url)
+            url = response.url
+            code = response.status_code
 
-        response = requests.get(url)
-        url = response.url
-        code = response.status_code
-
-        return code, url
+            return code, url
+        except rce :
+            raise Exception('URL not found')
 
     # return soup, error_text, success
     def get_full_page(self, url):
@@ -217,12 +220,14 @@ def _start_crawl_task(tbl):
 
         print(tbl.error_msg)
 
+    except rce:
+        tbl.status_process = tbl_crawl_task.ERROR_STATUS
+        tbl.error_msg = f'URL not found: {url}'
+        tbl.status_code = status_code
     except Exception as e:
         tbl.status_process = tbl_crawl_task.ERROR_STATUS
-        tbl.error_msg = repr(e)
+        tbl.error_msg = str(e)
         tbl.status_code = status_code
-        print(repr(e))
-        traceback.print_exc()
 
     finally:
         tbl.save()

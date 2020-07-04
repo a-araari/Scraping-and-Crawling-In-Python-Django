@@ -5,6 +5,7 @@ import re
 import random
 
 import requests
+from requests.exceptions import ConnectionError as rce
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
@@ -197,7 +198,9 @@ def _start_task(tbl):
         
         tbl.status_process = tbl_page_data.SUCCESS_STATUS if success else tbl_page_data.ERROR_STATUS
 
-
+    except rce:
+        tbl.status_process = tbl_page_data.ERROR_STATUS
+        tbl.error_msg = f'URL not found: {tbl.url}'
     except Exception as e:
         tbl.status_process = tbl_page_data.ERROR_STATUS
         tbl.error_msg = str(e)
