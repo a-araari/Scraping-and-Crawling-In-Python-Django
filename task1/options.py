@@ -138,17 +138,6 @@ class WebScraper:
         return page_content, None, True
 
 
-def decrease_all_pending_tasks_count():
-    try:
-        for tbl in tbl_page_data.objects.all():
-            try:
-                tbl.pending_task = tbl.pending_task - 1
-                tbl.save()
-            except:
-                pass
-    except:
-        pass
-
 def get_pending_count():
     return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
 
@@ -207,8 +196,6 @@ def _start_task(tbl):
 
     finally:
         tbl.save()
-        decrease_all_pending_tasks_count()
-
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
