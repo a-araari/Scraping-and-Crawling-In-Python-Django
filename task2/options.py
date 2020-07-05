@@ -43,6 +43,7 @@ class Crawl:
         self.options = Options()
         self.options.add_argument('--incognito')
         self.options.add_argument('--headless')
+        self.options.add_argument('--no-sandbox')
 
         print('creating driver')
         self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options)
