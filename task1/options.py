@@ -125,8 +125,6 @@ class WebScraper:
 
             page_content = self.get_content()
 
-            self.driver.close()
-
             print('URL scraped!')
 
         except Exception as ex:
