@@ -48,7 +48,6 @@ class Crawl:
         self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options)
         print('driver created')
 
-
     def get_url(self, link):
         # extract link url from the anchor
         anchor = link.attrs['href'] if 'href' in link.attrs else ''
@@ -189,37 +188,41 @@ def _start_crawl_task(tbl):
     tbl.save()
 
     status_code = None
-    try:
-        page = requests.get(tbl.url)
-        tbl.status_code = page.status_code
+    t = 0
+    while t < 3:
+        try:
+            page = requests.get(tbl.url)
+            tbl.status_code = page.status_code
 
-        if page.status_code in range(200, 300):
-            crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
+            if page.status_code in range(200, 300):
+                crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
 
-            succ, error_msg = crw.start_crawling(save, tbl)
-            if succ:
-                tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+                succ, error_msg = crw.start_crawling(save, tbl)
+                if succ:
+                    tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+                else:
+                    tbl.status_process = tbl_crawl_task.ERROR_STATUS
+                    tbl.error_msg = error_msg
+                
             else:
                 tbl.status_process = tbl_crawl_task.ERROR_STATUS
-                tbl.error_msg = error_msg
-            
-        else:
+                tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
+
+            print(tbl.error_msg)
+
+            break
+        except rce:
             tbl.status_process = tbl_crawl_task.ERROR_STATUS
-            tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
+            tbl.error_msg = f'URL not found: {url}'
+            tbl.status_code = status_code
+        except Exception as e:
+            tbl.status_process = tbl_crawl_task.ERROR_STATUS
+            tbl.error_msg = "Cannot establish a connection with the url given!"
+            tbl.status_code = status_code
 
-        print(tbl.error_msg)
-
-    except rce:
-        tbl.status_process = tbl_crawl_task.ERROR_STATUS
-        tbl.error_msg = f'URL not found: {url}'
-        tbl.status_code = status_code
-    except Exception as e:
-        tbl.status_process = tbl_crawl_task.ERROR_STATUS
-        tbl.error_msg = "Cannot establish a connection with the url given!"
-        tbl.status_code = status_code
-
-    finally:
-        tbl.save()
+        finally:
+            t += 1
+            tbl.save()
 
 
 def start_crawl_task(tbl):
