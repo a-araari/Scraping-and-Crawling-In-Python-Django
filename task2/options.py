@@ -168,18 +168,6 @@ def save(tbl, url, link_type, status_code, depth_level):
     tbl_data.save()
 
 
-def decrease_all_pending_tasks_count(min_p):
-    try:
-        for tbl in tbl_crawl_task.objects.filter(pending_task_gt=min_p):
-            try:
-                tbl.pending_task = tbl.pending_task - 1
-                tbl.save()
-            except:
-                pass
-    except:
-        pass
-
-
 def get_pending_count():
     return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
 
@@ -234,7 +222,6 @@ def _start_crawl_task(tbl):
         finally:
             t += 1
             tbl.save()
-            decrease_all_pending_tasks_count(tbl.pending_task)
 
 
 def start_crawl_task(tbl):
