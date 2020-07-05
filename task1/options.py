@@ -192,7 +192,7 @@ def _start_task(tbl):
         tbl.error_msg = f'URL not found: {tbl.url}'
     except Exception as e:
         tbl.status_process = tbl_page_data.ERROR_STATUS
-        tbl.error_msg = str(e)
+        tbl.error_msg = "Cannot establish a connection with the url given!"
 
     finally:
         tbl.save()
