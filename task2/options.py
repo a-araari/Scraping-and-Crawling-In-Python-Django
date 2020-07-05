@@ -41,7 +41,6 @@ class Crawl:
         self.processed_urls = []
 
         self.options = Options()
-        self.options.add_argument('--incognito')
         self.options.add_argument('--headless')
         self.options.add_argument('--no-sandbox')
 
