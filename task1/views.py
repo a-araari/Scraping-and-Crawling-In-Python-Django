@@ -117,7 +117,7 @@ class PageDataGetView(APIView):
                     "created_at":tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": task_id,
                     "url": tbl.url,
-                    "pending_task" : tbl.pending_task #!!! (show us the total number of pending task in queue forthis API)
+                    "pending_task" : tbl.pending_task, #!!! (show us the total number of pending task in queue forthis API)
                     "status_process": 'processing' if tbl.status_process==tbl_page_data.NONE_STATUS else tbl.status_process,
                     "page_status": tbl.status_code # {page HTTP status  status},(exe: 200,404,500,505 or null onstatus_process=processing)
                 }
