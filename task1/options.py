@@ -143,6 +143,7 @@ def get_pending_count():
 
 
 def decrease(pt):
+    log('decreasing ', pt)
     try:
         all_gt = tbl_page_data.objects.filter(pending_task__gte=pt)
         log(all_gt)
@@ -152,10 +153,10 @@ def decrease(pt):
                     continue
                 t.pending_task = t.pending_task - 1
                 t.save()
-            except:
-                pass
-    except:
-        pass
+            except Exception as e:
+                log(repr(e))
+    except Exception as e:
+        log(repr(e))
 
 
 def _start_task(tbl):
@@ -216,8 +217,8 @@ def _start_task(tbl):
             tbl.error_msg = "Server memory is Full, server cannot scrape more urls"
 
         finally:
-            tbl.save()
             t += 1
+            tbl.save()
             decrease(tbl.pending_task)
 
 
