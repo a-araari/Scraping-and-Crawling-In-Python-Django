@@ -18,9 +18,10 @@ from task2.models import Logger
 
 
 def log(*text):
-    l, created = Logger.objects.get_or_create(id=1)
-    l.text = l.text + '\n' + str(text)
-    l.save()
+    pass
+#    l, created = Logger.objects.get_or_create(id=1)
+#    l.text = l.text + '\n' + str(text)
+#    l.save()
 
 
 class WebScraper:
