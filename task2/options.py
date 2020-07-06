@@ -185,8 +185,13 @@ def save(tbl, url, link_type, status_code, depth_level):
 
 
 def get_pending_count():
-    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
 
+
+def check_is_it_my_order(pending_task):
+    return tbl_crawl_task.objects.filte(
+                status_process=tbl_crawl_task.PROCESSING_STATUS
+            ).order_by('-pending_task')[0].pending_task == (pending_task - 1)
 
 def decrease(pt):
     try:
@@ -210,10 +215,13 @@ def _start_crawl_task(tbl):
     tbl saved each time status_code or status_process changed
     """
     pending_tasks = get_pending_count()
-    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT:
+    is_it_my_order = check_is_it_my_order(tbl.pending_task)
+    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT and not is_it_my_order:
         log(pending_tasks, tbl.task_id, 'waiting')
-        time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
+        time.sleep(1)
         pending_tasks = get_pending_count()
+        is_it_my_order = check_is_it_my_order(tbl.pending_task)
+        log('is it my order', is_it_my_order)
         
     tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
     tbl.save()
