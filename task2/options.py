@@ -211,6 +211,7 @@ def _start_crawl_task(tbl):
     """
     pending_tasks = get_pending_count()
     while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT or tbl.pending_task != 0:
+        tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
         log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
         time.sleep(1)
         pending_tasks = get_pending_count()
