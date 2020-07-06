@@ -128,9 +128,11 @@ class Crawl:
             except Exception as e:
                 log('sublink exc:', repr(e))
                 # traceback.log_exc()
-        
-
+        log('--'*30)
+        log('CRAWLING..')
         for sub_link in saved_links:
+            log('--'*30)
+            log('crawling', sub_link)
             try:
                 sub_url, internal = self.get_url(sub_link)
 
@@ -145,7 +147,7 @@ class Crawl:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
-                log('sublink exc:', repr(e))
+                log('crawling sublink exc:', repr(e))
                 # traceback.log_exc()
 
 
