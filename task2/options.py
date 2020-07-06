@@ -106,7 +106,7 @@ class Crawl:
         saved_links = list()
 
         log('#'*70, ' '*5, dpt, ' '*5, '#'*70)
-
+        log('limit', len(self.saved_urls), self.limit)
         for sub_link in links:
             if len(self.saved_urls) > self.limit:
                 return
@@ -129,8 +129,8 @@ class Crawl:
                 count += 1
 
             except Exception as e:
-                log('sublink exc:', traceback.format_exc())
-                # traceback.log_exc()
+                pass
+
         log('--'*30)
         log('CRAWLING..')
         for sub_link in saved_links:
