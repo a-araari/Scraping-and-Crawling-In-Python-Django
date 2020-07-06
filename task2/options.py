@@ -104,9 +104,9 @@ class Crawl:
         if self.limit < len(links):
             all_count = 0
             for sub_link in links:
+                if all_count > self.limit:
+                    break
                 try:
-                    if all_count > self.limit:
-                        break
 
                     sub_url, internal = self.get_url(sub_link)
                     if sub_url in self.processed_urls or sub_url.endswith('#'):
