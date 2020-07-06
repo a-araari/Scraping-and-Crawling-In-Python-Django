@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 from .models import tbl_page_data
-from task2.models import tbl_crawl_task
 
 
 class WebScraper:
@@ -140,7 +139,7 @@ class WebScraper:
 
 
 def get_pending_count():
-    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
 
 
 def decrease(pt):
@@ -166,9 +165,10 @@ def _start_task(tbl):
     """
 
     pending_tasks = get_pending_count()
-    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT:
-        print(pending_tasks, tbl.task_id, 'waiting')
-        time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
+    while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task != 0:
+        tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
+        log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
+        time.sleep(1)
         pending_tasks = get_pending_count()
         
     tbl.status_process = tbl_page_data.PROCESSING_STATUS

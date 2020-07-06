@@ -16,7 +16,6 @@ from collections import deque
 from django.conf import settings
 
 from .models import tbl_crawl_task, tbl_crawl_task_data, Logger
-from task1.models import tbl_page_data
 from task1.options import WebScraper
 
 
@@ -210,7 +209,7 @@ def _start_crawl_task(tbl):
     tbl saved each time status_code or status_process changed
     """
     pending_tasks = get_pending_count()
-    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT or tbl.pending_task != 0:
+    while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task != 0:
         tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
         log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
         time.sleep(1)
