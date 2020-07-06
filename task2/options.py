@@ -134,7 +134,8 @@ class Crawl:
             log('--'*30)
             log('crawling', sub_link)
             try:
-                sub_url, internal = self.get_url(sub_link)
+                sub_url = sub_link
+                internal = self.strip_base in sub_url[:len(self.strip_base) + 7 + 4]
 
                 link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
 
