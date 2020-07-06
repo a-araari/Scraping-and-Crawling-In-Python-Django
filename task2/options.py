@@ -210,13 +210,10 @@ def _start_crawl_task(tbl):
     tbl saved each time status_code or status_process changed
     """
     pending_tasks = get_pending_count()
-    is_it_my_order = check_is_it_my_order(tbl.pending_task)
     while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT and tbl.pending_task != 0:
         log(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(1)
         pending_tasks = get_pending_count()
-        is_it_my_order = check_is_it_my_order(tbl.pending_task)
-        log('is it my order', is_it_my_order)
         
     tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
     tbl.save()

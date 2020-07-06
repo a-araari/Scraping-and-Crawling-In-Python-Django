@@ -5,7 +5,7 @@ from .models import tbl_crawl_task, tbl_crawl_task_data, Logger
 
 @admin.register(tbl_crawl_task)
 class tbl_crawl_taskAdmin(admin.ModelAdmin):
-    list_display = ('task_id', 'url', 'status_process')
+    list_display = ('task_id', 'url', 'status_process', 'pending_task')
 
 
 @admin.register(tbl_crawl_task_data)
