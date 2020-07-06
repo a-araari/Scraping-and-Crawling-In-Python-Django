@@ -144,8 +144,8 @@ def get_pending_count():
 
 def decrease(pt):
     try:
-        all_gt = tbl_page_data.objects.filter(pending_task__gt=pt)
-        print(all_gt)
+        all_gt = tbl_page_data.objects.filter(pending_task__gte=pt)
+        log(all_gt)
         for t in all_gt:
             try:
                 if t.pending_task == 0:
