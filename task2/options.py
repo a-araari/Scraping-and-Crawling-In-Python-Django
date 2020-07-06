@@ -188,9 +188,6 @@ def get_pending_count():
     return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
 
 
-def check_is_it_my_order(pending_task):
-    return pending_task < settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT
-
 def decrease(pt):
     try:
         all_gt = tbl_crawl_task.objects.filter(pending_task__gt=pt)
@@ -214,7 +211,7 @@ def _start_crawl_task(tbl):
     """
     pending_tasks = get_pending_count()
     is_it_my_order = check_is_it_my_order(tbl.pending_task)
-    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT and not is_it_my_order:
+    while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT and tbl.pending_task != 0:
         log(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(1)
         pending_tasks = get_pending_count()
