@@ -16,6 +16,7 @@ from collections import deque
 from django.conf import settings
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
+from task1.models import tbl_page_data
 from task1.options import WebScraper
 
 
@@ -169,7 +170,7 @@ def save(tbl, url, link_type, status_code, depth_level):
 
 
 def get_pending_count():
-    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
 
 
 def _start_crawl_task(tbl):
