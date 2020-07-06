@@ -96,6 +96,7 @@ class Crawl:
         return BeautifulSoup(page_content, 'html.parser'), error_text, success
 
     def _crawl(self, soup, save, tbl, count=0, dpt=0):
+        log('/'*20 + 'New soupt ot crwl' + '/'*20)
         if count >= self.limit or soup is None:
             log(f'limit={self.limit} reached!')
             return
