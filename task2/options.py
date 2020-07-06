@@ -253,8 +253,9 @@ def _start_crawl_task(tbl):
 
         finally:
             t += 1
-            tbl.save()
             decrease(tbl.pending_task)
+            tbl.pending_task = 0
+            tbl.save()
 
 
 def start_crawl_task(tbl):
