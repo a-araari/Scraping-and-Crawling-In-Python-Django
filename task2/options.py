@@ -216,7 +216,7 @@ def _start_crawl_task(tbl):
             tbl.status_code = status_code
         except Exception as e:
             tbl.status_process = tbl_crawl_task.ERROR_STATUS
-            tbl.error_msg = "Cannot establish a connection with the url given!"
+            tbl.error_msg = str(e) # "Cannot establish a connection with the url given!"
             tbl.status_code = status_code
 
         finally:

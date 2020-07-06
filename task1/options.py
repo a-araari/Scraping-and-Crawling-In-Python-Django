@@ -156,47 +156,51 @@ def _start_task(tbl):
         
     tbl.status_process = tbl_page_data.PROCESSING_STATUS
     tbl.save()
-    try:
-        # Check page status before scraping
-        page = requests.get(tbl.url)
+    t = 0
+    while t < 3:
+        try:
+            # Check page status before scraping
+            page = requests.get(tbl.url)
 
-        tbl.status_code = page.status_code
-        tbl.save()
-
-        if page.status_code not in range(200, 300):
-            tbl.status_process = tbl_page_data.ERROR_STATUS
-            tbl.error_msg = f"page return {page.status_code} code"
+            tbl.status_code = page.status_code
             tbl.save()
 
-            return
+            if page.status_code not in range(200, 300):
+                tbl.status_process = tbl_page_data.ERROR_STATUS
+                tbl.error_msg = f"page return {page.status_code} code"
+                tbl.save()
 
-        task = WebScraper(
-            url=tbl.url,
-            waiting=int(tbl.waiting),
-            scroll=int(tbl.scroll),
-        )
+                return
+
+            task = WebScraper(
+                url=tbl.url,
+                waiting=int(tbl.waiting),
+                scroll=int(tbl.scroll),
+            )
 
 
-        page_content, error_text, success = task.start_scraping()
+            page_content, error_text, success = task.start_scraping()
 
 
-        # save page content
-        if success:
-            tbl.page_content = page_content
-        else:
-            tbl.error_msg = error_text
-        
-        tbl.status_process = tbl_page_data.SUCCESS_STATUS if success else tbl_page_data.ERROR_STATUS
+            # save page content
+            if success:
+                tbl.page_content = page_content
+            else:
+                tbl.error_msg = error_text
+            
+            tbl.status_process = tbl_page_data.SUCCESS_STATUS if success else tbl_page_data.ERROR_STATUS
 
-    except rce:
-        tbl.status_process = tbl_page_data.ERROR_STATUS
-        tbl.error_msg = f'URL not found: {tbl.url}'
-    except Exception as e:
-        tbl.status_process = tbl_page_data.ERROR_STATUS
-        tbl.error_msg = "Cannot establish a connection with the url given!"
+            break
+        except rce:
+            tbl.status_process = tbl_page_data.ERROR_STATUS
+            tbl.error_msg = f'URL not found: {tbl.url}'
+        except Exception as e:
+            tbl.status_process = tbl_page_data.ERROR_STATUS
+            tbl.error_msg = str(e) # "Cannot establish a connection with the url given!"
 
-    finally:
-        tbl.save()
+        finally:
+            tbl.save()
+            t += 1
 
 
 def start_task(tbl):
