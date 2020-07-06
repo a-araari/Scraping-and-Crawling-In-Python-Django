@@ -101,72 +101,55 @@ class Crawl:
 
         print('#'*70, ' '*5, dpt, ' '*5, '#'*70)
 
-        if self.limit < len(links):
-            all_count = 0
-            for sub_link in links:
-                if all_count > self.limit:
-                    break
-                try:
+        for sub_link in links:
+            if count > self.limit:
+                break
 
-                    sub_url, internal = self.get_url(sub_link)
-                    if sub_url in self.processed_urls or sub_url.endswith('#'):
-                        continue
-                    print('processing:', sub_url)
-                    self.processed_urls.append(sub_url)
-
-                    link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
-
-                    code, valid_url = self.get_page(sub_url)
-                    sub_url = valid_url
-
-                    save(tbl, sub_url, link_type, code, dpt)
-
-                    all_count += 1
-
-                except Exception as e:
-                    print('sublink exc:', repr(e))
-                    # traceback.print_exc()
-        else:
-            for sub_link in links:
-                try:
-                    if count > self.limit:
-                        break
-
-                    sub_url, internal = self.get_url(sub_link)
-                    if sub_url in self.processed_urls or sub_url.endswith('#'):
-                        continue
-                    print('processing:', sub_url)
-                    self.processed_urls.append(sub_url)
-
-                    link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
-
-                    code, valid_url = self.get_page(sub_url)
-                    sub_url = valid_url
-
-                    try:
-                        if code in range(200, 300):
-                            sub_soup, error_msg, succ = self.get_full_page(sub_url)
-                            print('scrape succ:', succ)
-                            if succ:
-                                save(tbl, sub_url, link_type, code, dpt)
-                                saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
-                                count += 1
-                    except:
-                        save(tbl, sub_url, link_type, code, dpt)
-
-                except Exception as e:
-                    print('sublink exc:', repr(e))
-                    # traceback.print_exc()
-            count = 0
-            for sub_link_dict in saved_links:
-                if count >= self.limit:
-                    return
-
-                if not sub_link_dict['internal']:
+            try:
+                sub_url, internal = self.get_url(sub_link)
+                if sub_url in self.processed_urls or sub_url.endswith('#'):
                     continue
+                print('processing:', sub_url)
+                self.processed_urls.append(sub_url)
 
-                self._crawl(sub_link_dict['soup'], save, tbl, count=count, dpt=dpt+1)
+                link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
 
+                code, valid_url = self.get_page(sub_url)
+                sub_url = valid_url
+
+                save(tbl, sub_url, link_type, code, dpt)
+                saved_links.append(sub_url)
+                count += 1
+
+            except Exception as e:
+                print('sublink exc:', repr(e))
+                # traceback.print_exc()
+        
+
+        if count < self.limit:
+            for sub_link in saved_links:
+                try:
+                    sub_url, internal = self.get_url(sub_link)
+
+                    link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
+
+                    code, valid_url = self.get_page(sub_url)
+                    sub_url = valid_url
+
+                    if code in range(200, 300):
+                        sub_soup, error_msg, succ = self.get_full_page(sub_url)
+                        print('scrape succ:', succ)
+                        if succ:
+                            if not internal:
+                                continue
+
+                            self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
+                            count += 1
+
+                except Exception as e:
+                    print('sublink exc:', repr(e))
+                    # traceback.print_exc()
+                    
 
     def start_crawling(self, save, tbl):
         soup, error_text, success = self.get_full_page(tbl.url)
