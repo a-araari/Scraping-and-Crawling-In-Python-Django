@@ -101,7 +101,7 @@ class Crawl:
 
         print('#'*70, ' '*5, dpt, ' '*5, '#'*70)
 
-        if limit < len(links):
+        if self.limit < len(links):
             for sub_link in links:
                 try:
                     if count > self.limit:
