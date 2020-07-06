@@ -122,9 +122,10 @@ class Crawl:
                         if code in range(200, 300):
                             save(tbl, sub_url, link_type, code, dpt)
                             saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
-                            count += 1
                     except:
                         save(tbl, sub_url, link_type, code, dpt)
+
+                    count += 1
 
                 except Exception as e:
                     print('sublink exc:', repr(e))
@@ -160,7 +161,7 @@ class Crawl:
                 except Exception as e:
                     print('sublink exc:', repr(e))
                     # traceback.print_exc()
-
+            count = 0
             for sub_link_dict in saved_links:
                 if count >= self.limit:
                     return
