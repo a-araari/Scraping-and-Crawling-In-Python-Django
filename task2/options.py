@@ -209,7 +209,7 @@ def _start_crawl_task(tbl):
     tbl saved each time status_code or status_process changed
     """
     pending_tasks = get_pending_count()
-    while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task != 0:
+    while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
         tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
         log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
         time.sleep(1)

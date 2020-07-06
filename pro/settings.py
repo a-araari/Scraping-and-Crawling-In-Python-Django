@@ -28,7 +28,7 @@ VALIDATION_KEY = 'OEpotRjkg7UGxba6AfOUcIbNfNlvE9a1'
 
 # how many tasks can run in the same time
 MAX_CRAWL_COUNT = 1
-MAX_SCRAPE_COUNT = 1
+MAX_SCRAPE_COUNT = 3
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
