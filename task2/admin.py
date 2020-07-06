@@ -15,4 +15,4 @@ class tbl_crawl_taskAdmin(admin.ModelAdmin):
 
 @admin.register(Logger)
 class LoggertaskAdmin(admin.ModelAdmin):
-    list_display = ('text')
+    list_display = ('text',)
