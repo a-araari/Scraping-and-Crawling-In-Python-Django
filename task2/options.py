@@ -190,7 +190,7 @@ def get_pending_count():
 
 def decrease(pt):
     try:
-        all_gt = tbl_crawl_task.objects.filter(pending_task__gt=pt)
+        all_gt = tbl_crawl_task.objects.filter(pending_task__gte=pt)
         log(all_gt)
         for t in all_gt:
             try:
