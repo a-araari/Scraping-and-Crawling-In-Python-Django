@@ -15,13 +15,17 @@ from collections import deque
 
 from django.conf import settings
 
-from .models import tbl_crawl_task, tbl_crawl_task_data
+from .models import tbl_crawl_task, tbl_crawl_task_data, Logger
 from task1.models import tbl_page_data
 from task1.options import WebScraper
 
 
 logger = logging.getLogger(__name__)
 
+def log(text):
+    l = Logger.objects.get_or_create(id=1)
+    l.text = l.text + '\n' + str(text)
+    l.save()
 
 
 class Crawl:
@@ -45,9 +49,9 @@ class Crawl:
         self.options.add_argument('--headless')
         self.options.add_argument('--no-sandbox')
 
-        print('creating driver')
+        log('creating driver')
         self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options)
-        print('driver created')
+        log('driver created')
 
     def get_url(self, link):
         # extract link url from the anchor
@@ -79,7 +83,7 @@ class Crawl:
 
     # return soup, error_text, success
     def get_full_page(self, url):
-        print(type(self.driver))
+        log(type(self.driver))
         task = WebScraper(
             url=url,
             waiting=self.waiting,
@@ -93,13 +97,13 @@ class Crawl:
 
     def _crawl(self, soup, save, tbl, count=0, dpt=0):
         if count >= self.limit or soup is None:
-            print(f'limit={self.limit} reached!')
+            log(f'limit={self.limit} reached!')
             return
 
         links = soup.find_all('a')
         saved_links = list()
 
-        print('#'*70, ' '*5, dpt, ' '*5, '#'*70)
+        log('#'*70, ' '*5, dpt, ' '*5, '#'*70)
 
         for sub_link in links:
             if count > self.limit:
@@ -109,7 +113,7 @@ class Crawl:
                 sub_url, internal = self.get_url(sub_link)
                 if sub_url in self.processed_urls or sub_url.endswith('#'):
                     continue
-                print('processing:', sub_url)
+                log('processing:', sub_url)
                 self.processed_urls.append(sub_url)
 
                 link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
@@ -122,8 +126,8 @@ class Crawl:
                 count += 1
 
             except Exception as e:
-                print('sublink exc:', repr(e))
-                # traceback.print_exc()
+                log('sublink exc:', repr(e))
+                # traceback.log_exc()
         
 
         for sub_link in saved_links:
@@ -133,7 +137,7 @@ class Crawl:
                 link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
 
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
-                print('scrape succ:', succ)
+                log('scrape succ:', succ)
                 if succ:
                     if not internal:
                         continue
@@ -141,8 +145,8 @@ class Crawl:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
-                print('sublink exc:', repr(e))
-                # traceback.print_exc()
+                log('sublink exc:', repr(e))
+                # traceback.log_exc()
 
 
     def start_crawling(self, save, tbl):
@@ -159,7 +163,7 @@ class Crawl:
 
 
 def save(tbl, url, link_type, status_code, depth_level):
-    print('saving', url, ':', status_code, tbl)
+    log('saving', url, ':', status_code, tbl)
     if status_code is None:
         status_code = -1
     tbl_data = tbl_crawl_task_data(
@@ -179,7 +183,7 @@ def get_pending_count():
 def decrease(pt):
     try:
         all_gt = tbl_crawl_task.objects.filter(pending_task__gt=pt)
-        print(all_gt)
+        log(all_gt)
         for t in all_gt:
             try:
                 if t.pending_task == 0:
@@ -199,7 +203,7 @@ def _start_crawl_task(tbl):
     """
     pending_tasks = get_pending_count()
     while pending_tasks >= settings.RUNNING_TASKS_SIMULTANEOUSLY_COUNT:
-        print(pending_tasks, tbl.task_id, 'waiting')
+        log(pending_tasks, tbl.task_id, 'waiting')
         time.sleep(float(f'{random.randint(1, 5)}.{random.randint(100000, 999999)}'))
         pending_tasks = get_pending_count()
         
@@ -227,7 +231,7 @@ def _start_crawl_task(tbl):
                 tbl.status_process = tbl_crawl_task.ERROR_STATUS
                 tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
 
-            print(tbl.error_msg)
+            log(tbl.error_msg)
 
             break
         except rce:
