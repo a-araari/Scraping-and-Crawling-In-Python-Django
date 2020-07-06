@@ -119,8 +119,7 @@ class Crawl:
                     code, valid_url = self.get_page(sub_url)
                     sub_url = valid_url
 
-                    save(tbl, sub_url, link_type, code, all_count)
-                    saved_links.append({"link": sub_url, "internal": internal, "soup": sub_soup})
+                    save(tbl, sub_url, link_type, code, dpt)
 
                     all_count += 1
 
