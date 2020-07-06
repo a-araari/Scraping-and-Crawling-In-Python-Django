@@ -142,12 +142,9 @@ class Crawl:
 
                 log(str(sub_url))
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
-                log(str(sub_soup))
+                log(len(str(sub_soup)))
                 log('scrape succ:', succ, 'internal', internal, 'error', error_msg)
                 if succ:
-                    if not internal:
-                        continue
-
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
