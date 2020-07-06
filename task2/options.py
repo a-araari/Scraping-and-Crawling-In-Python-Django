@@ -23,7 +23,7 @@ from task1.options import WebScraper
 logger = logging.getLogger(__name__)
 
 def log(text):
-    l = Logger.objects.get_or_create(id=1)
+    l, created = Logger.objects.get_or_create(id=1)
     l.text = l.text + '\n' + str(text)
     l.save()
 
