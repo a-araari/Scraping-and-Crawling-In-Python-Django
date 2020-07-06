@@ -125,7 +125,7 @@ class Crawl:
 
                 save(tbl, sub_url, link_type, code, dpt)
                 saved_links.append(sub_url)
-                self.saved_urls.appen(sub_url)
+                self.saved_urls.append(sub_url)
                 count += 1
 
             except Exception as e:
