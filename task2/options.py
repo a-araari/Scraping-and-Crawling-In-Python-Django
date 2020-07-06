@@ -102,9 +102,10 @@ class Crawl:
         print('#'*70, ' '*5, dpt, ' '*5, '#'*70)
 
         if self.limit < len(links):
+            all_count = 0
             for sub_link in links:
                 try:
-                    if count > self.limit:
+                    if all_count > self.limit:
                         break
 
                     sub_url, internal = self.get_url(sub_link)
@@ -125,7 +126,7 @@ class Crawl:
                     except:
                         save(tbl, sub_url, link_type, code, dpt)
 
-                    count += 1
+                    all_count += 1
 
                 except Exception as e:
                     print('sublink exc:', repr(e))
