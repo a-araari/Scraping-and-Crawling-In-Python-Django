@@ -141,7 +141,7 @@ class Crawl:
                 link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
 
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
-                log('scrape succ:', succ)
+                log('scrape succ:', succ, 'error', error_msg, 'len', len(soup.content))
                 if succ:
                     if not internal:
                         continue
