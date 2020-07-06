@@ -143,7 +143,7 @@ class Crawl:
                 log(str(sub_url))
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
                 log(str(sub_soup))
-                log('scrape succ:', succ, 'error', error_msg)
+                log('scrape succ:', succ, 'internal', internal, 'error', error_msg)
                 if succ:
                     if not internal:
                         continue
