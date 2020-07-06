@@ -44,6 +44,7 @@ class Crawl:
         self.path = url[:url.rfind('/')+1] if '/' in self.linksparts.path else url
 
         self.processed_urls = []
+        self.saved_urls = []
 
         self.options = Options()
         self.options.add_argument('--headless')
@@ -97,7 +98,7 @@ class Crawl:
 
     def _crawl(self, soup, save, tbl, count=0, dpt=0):
         log('/'*20 + 'New soupt ot crwl' + '/'*20)
-        if count >= self.limit or soup is None:
+        if len(self.saved_urls) >= self.limit or soup is None:
             log(f'limit={self.limit} reached!')
             return
 
@@ -107,7 +108,7 @@ class Crawl:
         log('#'*70, ' '*5, dpt, ' '*5, '#'*70)
 
         for sub_link in links:
-            if count > self.limit:
+            if len(self.saved_urls) > self.limit:
                 return
 
             try:
@@ -124,6 +125,7 @@ class Crawl:
 
                 save(tbl, sub_url, link_type, code, dpt)
                 saved_links.append(sub_url)
+                self.saved_urls.appen(sub_url)
                 count += 1
 
             except Exception as e:
@@ -132,6 +134,8 @@ class Crawl:
         log('--'*30)
         log('CRAWLING..')
         for sub_link in saved_links:
+            if len(self.saved_urls) > self.limit:
+                return
             log('--'*30)
             log('crawling', sub_link)
             try:
@@ -144,7 +148,8 @@ class Crawl:
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
                 log(len(str(sub_soup)))
                 log('scrape succ:', succ, 'internal', internal, 'error', error_msg)
-                if succ:
+
+                if succ and not internal:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
