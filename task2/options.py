@@ -126,7 +126,7 @@ class Crawl:
                 count += 1
 
             except Exception as e:
-                log('sublink exc:', repr(e))
+                log('sublink exc:', traceback.format_exc())
                 # traceback.log_exc()
         log('--'*30)
         log('CRAWLING..')
@@ -147,7 +147,7 @@ class Crawl:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
-                log('crawling sublink exc:', repr(e))
+                log('crawling sublink exc:', traceback.format_exc())
                 # traceback.log_exc()
 
 
