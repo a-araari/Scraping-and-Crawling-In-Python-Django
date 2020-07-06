@@ -190,7 +190,8 @@ def get_pending_count():
 
 def check_is_it_my_order(pending_task):
     return tbl_crawl_task.objects.filter(
-                status_process=tbl_crawl_task.PROCESSING_STATUS
+                status_process=tbl_crawl_task.SUCCESS_STATUS,
+                status_process=tbl_crawl_task.ERROR_STATUS
             ).order_by('-pending_task')[0].pending_task == (pending_task - 1)
 
 def decrease(pt):
