@@ -113,7 +113,7 @@ class CrawlGetView(APIView):
                     "created_at": tbl.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"), # (exe: Thu, 25 Jun 2020 12:41:02 GMT)
                     "Task_id": tbl.task_id,
                     "url": tbl.url,
-                    "pending_task": get_pending_task_count() - 1, # tbl.pending_task !!!
+                    "pending_task": tbl.pending_task,
                     "status_process": 'processing' if tbl.status_process==tbl_crawl_task.NONE_STATUS else tbl.status_process,
                 }
             }

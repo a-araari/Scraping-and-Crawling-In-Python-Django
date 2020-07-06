@@ -143,6 +143,22 @@ def get_pending_count():
     return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
 
 
+def decrease(pt):
+    try:
+        all_gt = tbl_page_data.objects.filter(pending_task__gt=pt)
+        print(all_gt)
+        for t in all_gt:
+            try:
+                if t.pending_task == 0:
+                    continue
+                t.pending_task = t.pending_task - 1
+                t.save()
+            except:
+                pass
+    except:
+        pass
+
+
 def _start_task(tbl):
     """
     Task work goes here!
@@ -202,6 +218,7 @@ def _start_task(tbl):
         finally:
             tbl.save()
             t += 1
+            decrease(tbl.pending_task)
 
 
 def start_task(tbl):
