@@ -105,7 +105,7 @@ class Crawl:
             all_count = 0
             for sub_link in links:
                 try:
-                    if all_count > self.limit:
+                    if all_count/2 > self.limit:
                         break
 
                     sub_url, internal = self.get_url(sub_link)
