@@ -103,7 +103,7 @@ class Crawl:
 
         for sub_link in links:
             if count > self.limit:
-                break
+                return
 
             try:
                 sub_url, internal = self.get_url(sub_link)
@@ -126,30 +126,24 @@ class Crawl:
                 # traceback.print_exc()
         
 
-        if count < self.limit:
-            for sub_link in saved_links:
-                try:
-                    sub_url, internal = self.get_url(sub_link)
+        for sub_link in saved_links:
+            try:
+                sub_url, internal = self.get_url(sub_link)
 
-                    link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
+                link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
 
-                    code, valid_url = self.get_page(sub_url)
-                    sub_url = valid_url
+                sub_soup, error_msg, succ = self.get_full_page(sub_url)
+                print('scrape succ:', succ)
+                if succ:
+                    if not internal:
+                        continue
 
-                    if code in range(200, 300):
-                        sub_soup, error_msg, succ = self.get_full_page(sub_url)
-                        print('scrape succ:', succ)
-                        if succ:
-                            if not internal:
-                                continue
+                    self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
-                            self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
-                            count += 1
+            except Exception as e:
+                print('sublink exc:', repr(e))
+                # traceback.print_exc()
 
-                except Exception as e:
-                    print('sublink exc:', repr(e))
-                    # traceback.print_exc()
-                    
 
     def start_crawling(self, save, tbl):
         soup, error_text, success = self.get_full_page(tbl.url)
