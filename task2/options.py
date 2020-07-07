@@ -168,6 +168,7 @@ class Crawl:
                 return False, error_text
         finally:
             self.driver.quit()
+            del self.driver
 
 
 def save(tbl, url, link_type, status_code, depth_level):

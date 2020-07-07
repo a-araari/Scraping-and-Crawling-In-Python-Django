@@ -142,6 +142,7 @@ class WebScraper:
         finally:
             if self.quit:
                 self.driver.quit()
+                del self.driver
 
         return page_content, None, True
 
