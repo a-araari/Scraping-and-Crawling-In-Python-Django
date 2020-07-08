@@ -93,14 +93,14 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        print('Creating driver..')
+        log('Creating driver..')
         self.driver = get_driver()
-        print('Driver created!')
+        log('Driver created!')
 
         page_content = ''
         try:
 
-            print('Scraping the URL')
+            log('Scraping the URL')
             self.driver.get(self.url)
 
             self.wait_for_page_load()
@@ -128,7 +128,7 @@ class WebScraper:
 
             page_content = self.get_content()
 
-            print('URL scraped!')
+            log('URL scraped!')
 
         except Exception as ex:
             log('Driver EX', repr(ex))
@@ -143,10 +143,8 @@ def get_pending_count():
 
 
 def decrease(pt):
-    log('decreasing ', pt)
     try:
         all_gt = tbl_page_data.objects.filter(pending_task__gte=pt)
-        log(all_gt)
         for t in all_gt:
             try:
                 if t.pending_task == 0:
