@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.conf import settings
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -44,6 +46,13 @@ def validate_positive(n, rep):
     return n
 
 
+def auto_delete():
+    try:
+        before_month = date.today() - timedelta(days=1)
+        tbl_page_data.objects.filter(created_at__lte=before_month).delete()
+    except:
+        pass
+
 class PageDataSetView(APIView):
     """
     Set API View for creating scrape tasks
@@ -54,6 +63,7 @@ class PageDataSetView(APIView):
         required query strings: (url, waiting, scroll, validation_key)
         """
         try:
+            auto_delete()
             #validate the secret key
             secret_key = request.GET['validation_key']
             validate_key(secret_key)
