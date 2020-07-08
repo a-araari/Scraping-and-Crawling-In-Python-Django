@@ -6,7 +6,6 @@ import random
 
 import requests
 from requests.exceptions import ConnectionError as rce
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -15,13 +14,13 @@ from django.conf import settings
 
 from .models import tbl_page_data
 from task2.models import Logger
+from .__init__ import get_driver
 
 
 def log(*text):
-    pass
-#    l, created = Logger.objects.get_or_create(id=1)
-#    l.text = l.text + '\n' + str(text)
-#    l.save()
+    l, created = Logger.objects.get_or_create(id=1)
+    l.text = l.text + '\n' + str(text)
+    l.save()
 
 
 class WebScraper:
@@ -38,11 +37,7 @@ class WebScraper:
         self.url = url
         self.waiting = waiting
         self.scroll = scroll
-        self.options = Options()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--no-sandbox')
         self.driver = driver
-        self.quit = driver is None
 
         if not self.valid_url(self.url):
             raise ValueError(f'Unvalid Url: {self.url}')
@@ -99,7 +94,7 @@ class WebScraper:
 
     def start_scraping(self):
         print('Creating driver..')
-        self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options) if self.driver is None else self.driver
+        self.driver = get_driver()
         print('Driver created!')
 
         page_content = ''
@@ -136,12 +131,9 @@ class WebScraper:
             print('URL scraped!')
 
         except Exception as ex:
-            traceback.print_exc()
+            log('Driver EX', repr(ex))
             return page_content, repr(ex), False
 
-        finally:
-            if self.quit:
-                self.driver.quit()
 
         return page_content, None, True
 
