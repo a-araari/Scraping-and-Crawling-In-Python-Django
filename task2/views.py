@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.conf import settings
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -43,6 +45,14 @@ def validate_positive(n, rep):
     return n
 
 
+def auto_delete():
+    try:
+        before_month = date.today() - timedelta(days=1)
+        tbl_crawl_task.objects.filter(created_at__lte=before_month).delete()
+    except:
+        pass
+
+
 class CrawlSetView(APIView):
     # Args: ?url & limit & waiting & scroll & validation_key
     def get(self, request, format=None):
@@ -50,6 +60,7 @@ class CrawlSetView(APIView):
         Create a row in tbl_crawl_task using the values in request.GET
         """
         try:
+            auto_delete()
             secret_key = request.GET['validation_key']
             validate_key(secret_key)
 
