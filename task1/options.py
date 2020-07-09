@@ -232,7 +232,7 @@ def _start_task(tbl):
                 tbl.pending_task = 0
                 tbl.save()
     finally:
-        Print(tbl.task_id, "Exited", tbl.status_process, tbl.pending_task)
+        print(tbl.task_id, "Exited", tbl.status_process, tbl.pending_task)
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
