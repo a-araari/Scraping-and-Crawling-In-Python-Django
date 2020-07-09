@@ -14,7 +14,7 @@ from django.conf import settings
 
 from .models import tbl_page_data
 from task2.models import Logger
-from .__init__ import get_driver
+from .__init__ import get_driver, decrease_p
 
 
 def log(*text):
@@ -230,10 +230,11 @@ def _start_task(tbl):
 
             finally:
                 t += 1
-                decrease(tbl.pending_task)
                 tbl.pending_task = 0
                 tbl.save()
     finally:
+        decrease_p()
+        decrease(tbl.pending_task)
         print(tbl.task_id, "Exited", tbl.status_process, tbl.pending_task)
 
 def start_task(tbl):

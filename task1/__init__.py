@@ -22,4 +22,17 @@ def get_driver(force=False):
 
     return driver
 
-    
+p = 0
+def get_p():
+    global p
+    print('getting p', p)
+
+    p += 1
+
+    return p
+
+def decread_p():
+    global p
+    print('decresing p', p)
+
+    p -= 1

@@ -10,6 +10,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import tbl_page_data
 from . import  options
+from .__init__ import get_p
 
 
 def validate_key(key):
@@ -83,7 +84,7 @@ class PageDataSetView(APIView):
                 url=url,
                 waiting=waiting,
                 scroll=scroll,
-                pending_task=get_pending_task_count(),
+                pending_task=get_p(),
             )
             tbl.save()
 
