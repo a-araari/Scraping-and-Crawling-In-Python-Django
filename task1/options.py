@@ -225,13 +225,11 @@ def _start_task(tbl):
             tbl.error_msg = "Server memory is Full, server cannot scrape more urls"
 
             tbl.save()
+        finally:
+            t += 1
+            decrease(tbl.pending_task)
+            tbl.pending_task = 0
 
-
-
-            finally:
-                t += 1
-                decrease(tbl.pending_task)
-                tbl.pending_task = 0
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
     t.setDaemon(True)
