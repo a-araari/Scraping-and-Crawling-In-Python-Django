@@ -22,7 +22,7 @@ def get_driver(force=False):
 
     return driver
 
-p = 0
+p = -1
 def get_p():
     global p
     print('getting p', p)
