@@ -10,6 +10,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import tbl_page_data
 from . import  options
+from .__init__ import get_pending
 
 
 def validate_key(key):
@@ -22,7 +23,7 @@ def validate_key(key):
 
 
 def get_pending_task_count():
-    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS).count()
+    return get_pending()
 
 
 validate = URLValidator()

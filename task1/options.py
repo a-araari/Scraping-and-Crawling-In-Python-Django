@@ -14,7 +14,7 @@ from django.conf import settings
 
 from .models import tbl_page_data
 from task2.models import Logger
-from .__init__ import get_driver
+from .__init__ import get_driver, decrease_pending
 
 
 def log(*text):
@@ -149,6 +149,7 @@ def decrease(pt):
             try:
                 if t.pending_task == 0:
                     continue
+                decrease_pending()
                 t.pending_task = t.pending_task - 1
                 t.save()
             except Exception as e:
@@ -208,7 +209,7 @@ def _start_task(tbl):
 
             if success:
                 break
-            
+
 
         except rce:
             tbl.status_process = tbl_page_data.ERROR_STATUS
