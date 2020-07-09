@@ -95,9 +95,9 @@ class WebScraper:
 
     def start_scraping(self):
         t = 0
-        while t > 3:
+        page_content = ''
 
-            page_content = ''
+        while t < 3:
     
             try:
                 log('Creating driver..')
