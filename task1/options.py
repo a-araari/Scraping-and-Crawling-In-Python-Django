@@ -163,24 +163,26 @@ def _start_task(tbl):
     tbl saved each time status_code or status_process changed
     """
     try:
-        pending_tasks = get_pending_count()
-        while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
-            try:
-                tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
-            except Exception as e:
-                print(repr(e))
-            if tbl.pending_task in (0, 1):
-                print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
-            log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
-            time.sleep(1)
-            pending_tasks = get_pending_count()
-
-        print(tbl.task_id, 'start')
-
-        tbl.status_process = tbl_page_data.PROCESSING_STATUS
-        tbl.save()
         t = 0
         while t < 3:
+            
+            pending_tasks = get_pending_count()
+            while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
+                try:
+                    tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
+                except Exception as e:
+                    print(repr(e))
+                if tbl.pending_task in (0, 1, 2):
+                    print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
+                
+                time.sleep(2)
+                pending_tasks = get_pending_count()
+
+            print(tbl.task_id, 'start')
+
+            tbl.status_process = tbl_page_data.PROCESSING_STATUS
+            tbl.save()
+
             try:
                 # Check page status before scraping
                 page = requests.get(tbl.url)
