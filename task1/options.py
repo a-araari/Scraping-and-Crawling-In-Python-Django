@@ -72,17 +72,14 @@ class WebScraper:
 
     def is_page_loaded(self, arg):
         resp = self.driver.execute_script('return document.readyState')
-        # print('resp:', resp)
         return resp == 'complete'
 
     def wait_for_page_load(self):
         try:
-            # print(f'waiting for page to be loaded')
             wait = WebDriverWait(self.driver, 30)
             wait.until(self.is_page_loaded)
         except:
             pass
-        # print(f'waiting after page load for {self.waiting}\'s')
         time.sleep(self.waiting)
 
     def start_scraping(self):
@@ -151,18 +148,14 @@ def _start_task(tbl):
         while t < 3:
             
             pending_tasks = get_pending_count()
-            while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
+            while pending_tasks >= 1 or tbl.pending_task >= 1:
                 try:
                     tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
                 except Exception as e:
-                    print(tbl.task_id, ':', repr(e))
-                if tbl.pending_task in (0, 1, 2):
-                    print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
+                    pass
                 
                 time.sleep(2)
                 pending_tasks = get_pending_count()
-
-            print(tbl.task_id, 'start')
 
             tbl.status_process = tbl_page_data.PROCESSING_STATUS
             tbl.save()
@@ -219,7 +212,6 @@ def _start_task(tbl):
     finally:
         decrease_p()
         decrease(tbl.pending_task)
-        print(tbl.task_id, "Exited", tbl.status_process, tbl.pending_task)
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])

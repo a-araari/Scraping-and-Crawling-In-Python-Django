@@ -25,14 +25,11 @@ def get_driver(force=False):
 p = -1
 def get_p():
     global p
-    print('getting p', p)
 
     p += 1
-
     return p
 
 def decrease_p():
     global p
-    print('decresing p', p)
 
     p -= 1
