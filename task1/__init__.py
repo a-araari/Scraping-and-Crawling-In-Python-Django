@@ -31,7 +31,7 @@ def get_p():
 
     return p
 
-def decread_p():
+def decrease_p():
     global p
     print('decresing p', p)
 
