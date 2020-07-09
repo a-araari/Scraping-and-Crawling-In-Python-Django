@@ -168,7 +168,7 @@ def _start_task(tbl):
     none_task_id = None
     while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
         if max_t > 15:
-            t = tbl_page_data.filter(pending_task=0)
+            t = tbl_page_data.objects.filter(pending_task=0)
             if t.exists():
                 if tbl.pending_task == 1:
                     _start_task(t.first())
@@ -187,7 +187,7 @@ def _start_task(tbl):
         time.sleep(1)
         pending_tasks = get_pending_count()
 
-        new_none_task_id = tbl_page_data.filter(task_id=none_task_id)
+        new_none_task_id = tbl_page_data.objects.filter(task_id=none_task_id)
         if new_none_task_id.exists():
             new_none_task_id = new_none_task_id.first()
             if none_task_id is not None and new_none_task_id.task_id == none_task_id.task_id:
