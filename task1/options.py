@@ -164,41 +164,16 @@ def _start_task(tbl):
     """
 
     pending_tasks = get_pending_count()
-    max_t = 0
-    none_task_id = None
     while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
-        if max_t > 15:
-            t = tbl_page_data.objects.filter(pending_task=0)
-            if t.exists():
-                if tbl.pending_task == 1:
-                    _start_task(t.first())
-
-            else:
-                if tbl.pending_task == 1:
-                    tbl.pending_task = 0
-
         try:
             tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
         except Exception as e:
             print(repr(e))
-        if tbl.pending_task in (0, 1, 3):
-            print(tbl.pending_task, ": waiting :", settings.MAX_SCRAPE_COUNT)
+        if tbl.pending_task in (0, 1):
+            print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
         log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
         time.sleep(1)
         pending_tasks = get_pending_count()
-
-        if none_task_id is None:
-            none_task_id = tbl_page_data.objects.filter(pending_task=0).first()
-
-        print(max_t, tbl_page_data.objects.filter(pending_task=0).exists())
-
-        new_none_task_id = tbl_page_data.objects.filter(task_id=none_task_id.task_id)
-        if new_none_task_id.exists():
-            new_none_task_id = new_none_task_id.first()
-            if none_task_id is not None and new_none_task_id.task_id == none_task_id.task_id:
-                max_t += 1
-            else:
-                none_task_id = new_none_task_id
 
     print(tbl.task_id, 'start')
 
