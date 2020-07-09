@@ -22,15 +22,4 @@ def get_driver(force=False):
 
     return driver
 
-
-pending = 0
-
-def get_pending():
-    global pending
-    pending += 1
-
-    return pending
-
-def decrease_pending():
-    global pending
-    pending -= 1
+    
