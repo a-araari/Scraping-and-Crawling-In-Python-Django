@@ -181,7 +181,7 @@ def _start_task(tbl):
                 else:
                     none_count = 0
 
-                if none_count > 15 and if tbl.pending_task == 1:
+                if none_count > 15 and tbl.pending_task == 1:
                     tbl.pending_task = 0
                     tbl.save()
                 
