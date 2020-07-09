@@ -7,7 +7,6 @@ import random
 import requests
 from requests.exceptions import ConnectionError as rce
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import WebDriverException
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
@@ -94,55 +93,46 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        t = 0
+        log('Creating driver..')
+        self.driver = get_driver()
+        log('Driver created!')
+
         page_content = ''
+        try:
 
-        while t < 3:
-    
-            try:
-                log('Creating driver..')
-                self.driver = get_driver()
-                log('Driver created!')
+            log('Scraping the URL')
+            self.driver.get(self.url)
 
-                log('Scraping the URL')
-                self.driver.get(self.url)
+            self.wait_for_page_load()
+
+            page_content = self.get_content()
+            # print(f'page content contain {len(page_content)} characters')
+            old_scroll_top = -1
+            new_scroll_top = self.get_scroll_top()
+            # print(f'Initial page scroll count: {new_scroll_top} ')
+
+            while new_scroll_top < self.scroll:
+                # print('-'*20)
+                if old_scroll_top == new_scroll_top:
+                    break;
+
+                self.scroll_down()
 
                 self.wait_for_page_load()
 
-                page_content = self.get_content()
-                # print(f'page content contain {len(page_content)} characters')
-                old_scroll_top = -1
+                old_scroll_top = new_scroll_top
                 new_scroll_top = self.get_scroll_top()
-                # print(f'Initial page scroll count: {new_scroll_top} ')
+                print(f'New scroll count: {new_scroll_top}')
 
-                while new_scroll_top < self.scroll:
-                    # print('-'*20)
-                    if old_scroll_top == new_scroll_top:
-                        break;
+            print(f'Last page scroll count: {new_scroll_top} ')
 
-                    self.scroll_down()
+            page_content = self.get_content()
 
-                    self.wait_for_page_load()
+            log('URL scraped!')
 
-                    old_scroll_top = new_scroll_top
-                    new_scroll_top = self.get_scroll_top()
-                    print(f'New scroll count: {new_scroll_top}')
-
-                print(f'Last page scroll count: {new_scroll_top} ')
-
-                page_content = self.get_content()
-
-                log('URL scraped!')
-            except WebDriverException as ex:
-                self.driver = get_driver(force=True)
-                if t == 2:
-                    raise ex
-            except Exception as ex:
-                log('Driver EX', repr(ex))
-                if t == 2:
-                    return page_content, repr(ex), False
-
-            t += 1
+        except Exception as ex:
+            log('Driver EX', repr(ex))
+            return page_content, repr(ex), False
 
 
         return page_content, None, True
@@ -222,13 +212,14 @@ def _start_task(tbl):
             tbl.error_msg = f'URL not found: {tbl.url}'
         except Exception as e:
             tbl.status_process = tbl_page_data.ERROR_STATUS
-            tbl.error_msg = str(t) + repr(e) # "Server memory is Full, server cannot scrape more urls"
+            tbl.error_msg = "Server memory is Full, server cannot scrape more urls"
 
-            tbl.save()
         finally:
             t += 1
             decrease(tbl.pending_task)
             tbl.pending_task = 0
+            tbl.save()
+
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
