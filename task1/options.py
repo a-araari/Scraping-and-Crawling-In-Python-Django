@@ -208,7 +208,9 @@ def _start_task(tbl):
 
             if success:
                 break
-            
+            else:
+                get_driver(force=True)
+
 
         except rce:
             tbl.status_process = tbl_page_data.ERROR_STATUS
