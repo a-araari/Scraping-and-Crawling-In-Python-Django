@@ -165,8 +165,7 @@ def _start_task(tbl):
     try:
         t = 0
         while t < 3:
-            none_count = 0
-
+            
             pending_tasks = get_pending_count()
             while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
                 try:
@@ -175,15 +174,6 @@ def _start_task(tbl):
                     print(tbl.task_id, ':', repr(e))
                 if tbl.pending_task in (0, 1, 2):
                     print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
-
-                if tbl.pending_task == 0:
-                    none_count += 1
-                else:
-                    none_count = 0
-
-                if none_count > 15 and tbl.pending_task == 1:
-                    tbl.pending_task = 0
-                    tbl.save()
                 
                 time.sleep(2)
                 pending_tasks = get_pending_count()
