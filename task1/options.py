@@ -13,14 +13,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 from .models import tbl_page_data
-from task2.models import Logger
 from .__init__ import get_driver, decrease_p
-
-
-def log(*text):
-    l, created = Logger.objects.get_or_create(id=1)
-    l.text = l.text + '\n' + str(text)
-    l.save()
 
 
 class WebScraper:
@@ -93,26 +86,22 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        log('Creating driver..')
         self.driver = get_driver()
-        log('Driver created!')
 
         page_content = ''
         try:
 
-            log('Scraping the URL')
             self.driver.get(self.url)
 
             self.wait_for_page_load()
 
             page_content = self.get_content()
-            # print(f'page content contain {len(page_content)} characters')
+
             old_scroll_top = -1
             new_scroll_top = self.get_scroll_top()
-            # print(f'Initial page scroll count: {new_scroll_top} ')
 
             while new_scroll_top < self.scroll:
-                # print('-'*20)
+
                 if old_scroll_top == new_scroll_top:
                     break;
 
@@ -122,16 +111,11 @@ class WebScraper:
 
                 old_scroll_top = new_scroll_top
                 new_scroll_top = self.get_scroll_top()
-                print(f'New scroll count: {new_scroll_top}')
 
-            print(f'Last page scroll count: {new_scroll_top} ')
 
             page_content = self.get_content()
 
-            log('URL scraped!')
-
         except Exception as ex:
-            log('Driver EX', repr(ex))
             return page_content, repr(ex), False
 
 
@@ -152,9 +136,9 @@ def decrease(pt):
                 t.pending_task = t.pending_task - 1
                 t.save()
             except Exception as e:
-                log(repr(e))
+                pass
     except Exception as e:
-        log(repr(e))
+        pass
 
 
 def _start_task(tbl):

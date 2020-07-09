@@ -75,6 +75,3 @@ class tbl_crawl_task_data(models.Model):
 
     def __str__(self):
         return f'{self.task_id}: {self.url} : depth={self.depth_level}'
-
-class Logger(models.Model):
-    text = models.TextField()
