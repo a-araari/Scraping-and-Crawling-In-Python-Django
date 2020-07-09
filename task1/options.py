@@ -206,7 +206,10 @@ def _start_task(tbl):
             
             tbl.status_process = tbl_page_data.SUCCESS_STATUS if success else tbl_page_data.ERROR_STATUS
 
-            break
+            if success:
+                break
+            
+
         except rce:
             tbl.status_process = tbl_page_data.ERROR_STATUS
             tbl.error_msg = f'URL not found: {tbl.url}'
