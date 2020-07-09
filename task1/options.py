@@ -171,7 +171,7 @@ def _start_task(tbl):
                 try:
                     tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
                 except Exception as e:
-                    print(repr(e))
+                    print(tbl.task_id, ':', repr(e))
                 if tbl.pending_task in (0, 1, 2):
                     print(tbl.task_id, tbl.pending_task, ": waiting :", pending_tasks, settings.MAX_SCRAPE_COUNT)
                 
