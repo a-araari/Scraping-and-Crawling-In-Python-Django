@@ -169,11 +169,12 @@ def _start_task(tbl):
             tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
         except Exception as e:
             print(repr(e))
-            
+        if tbl.pending_task in (0, 1, 3):
+            print(tbl.pending_task, ": waiting :", settings.MAX_SCRAPE_COUNT)
         log(pending_tasks, tbl.pending_task, tbl.task_id, 'waiting')
         time.sleep(1)
         pending_tasks = get_pending_count()
-        
+    print(tbl.task_id, 'start')
     tbl.status_process = tbl_page_data.PROCESSING_STATUS
     tbl.save()
     t = 0
