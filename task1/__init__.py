@@ -5,8 +5,12 @@ from selenium.webdriver.chrome.options import Options
 driver = None
 
 
-def get_driver():
+def get_driver(force=False):
     global driver
+
+    if force and driver is not None:
+        driver.quit()
+        driver = None
 
     if driver is None:
 
