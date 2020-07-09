@@ -222,7 +222,7 @@ def _start_task(tbl):
             tbl.error_msg = f'URL not found: {tbl.url}'
         except Exception as e:
             tbl.status_process = tbl_page_data.ERROR_STATUS
-            tbl.error_msg = "Server memory is Full, server cannot scrape more urls"
+            tbl.error_msg = str(t) + repr(e) # "Server memory is Full, server cannot scrape more urls"
 
             tbl.save()
         finally:
