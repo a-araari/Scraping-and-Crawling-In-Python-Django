@@ -49,7 +49,7 @@ def validate_positive(n, rep):
 
 def auto_delete():
     try:
-        before_month = date.today() - timedelta(days=1)
+        before_month = date.today() - timedelta(days=30)
         tbl_page_data.objects.filter(created_at__lte=before_month).delete()
     except:
         pass
