@@ -109,10 +109,11 @@ class Crawl:
                 code, valid_url = self.get_page(sub_url)
                 sub_url = valid_url
 
-                save(tbl, sub_url, link_type, code, dpt)
-                saved_links.append((sub_url, internal))
-                self.saved_urls.append(sub_url)
-                count += 1
+                if sub_url not in self.saved_urls:
+                    save(tbl, sub_url, link_type, code, dpt)
+                    saved_links.append((sub_url, internal))
+                    self.saved_urls.append(sub_url)
+                    count += 1
 
             except Exception as e:
                 pass
@@ -205,6 +206,8 @@ def _start_crawl_task(tbl):
             if page.status_code in range(200, 300):
                 crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
 
+                crw.saved_urls.append(tbl.url)
+                
                 succ, error_msg = crw.start_crawling(save, tbl)
                 if succ:
                     tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
