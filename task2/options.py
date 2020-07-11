@@ -85,6 +85,7 @@ class Crawl:
         return BeautifulSoup(page_content, 'html.parser'), error_text, success
 
     def _crawl(self, soup, save, tbl, count=0, dpt=0):
+        print('-'*10, 'crawling depth', dpt, ':', count)
         if len(self.saved_urls) >= self.limit or soup is None:
             return
 
