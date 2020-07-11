@@ -125,6 +125,10 @@ class Crawl:
 
             if len(self.saved_urls) > self.limit:
                 return
+                
+            if not internal:
+                continue
+
             try:
                 sub_url = sub_link
             
@@ -207,7 +211,7 @@ def _start_crawl_task(tbl):
                 crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
 
                 crw.saved_urls.append(tbl.url)
-                
+
                 succ, error_msg = crw.start_crawling(save, tbl)
                 if succ:
                     tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
