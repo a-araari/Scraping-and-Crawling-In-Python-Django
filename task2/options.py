@@ -48,12 +48,8 @@ class Crawl:
         anchor = link.attrs['href'] if 'href' in link.attrs else ''
         anchor = anchor.replace('www.', '')
 
-        print('anchor:', anchor)
-        print('base_url:', self.base_url)
-        print('-'*50)
-
         if anchor.startswith('//'):
-            return anchor[2:], True
+            return anchor[2:], True if self.strip_base in anchor[:len(self.strip_base) + (7 if anchor.startswith('http') else 1) ] else False
         elif anchor.startswith('/'):
             return (self.base_url + anchor), True
         else:
