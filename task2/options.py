@@ -93,7 +93,9 @@ class Crawl:
         saved_links = list()
 
         for sub_link in links:
+            print('sub_link', sub_link)
             if len(self.saved_urls) > self.limit:
+                print('return', '-'*5, 'SAVED')
                 return
 
             try:
@@ -118,6 +120,7 @@ class Crawl:
         for sub_link_list in saved_links:
             sub_link = sub_link_list[0]
             internal = sub_link_list[1]
+            print('crawling', sub_link)
 
             if len(self.saved_urls) > self.limit:
                 return
