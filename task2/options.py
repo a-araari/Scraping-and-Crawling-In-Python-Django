@@ -52,8 +52,6 @@ class Crawl:
             return (anchor[2:], True)
         elif anchor.startswith('/'):
             return (self.base_url + anchor, True)
-        elif self.strip_base in anchor[:len(self.strip_base) + (7 if anchor.startswith('http') else 1)]: # +7 for https:// and +4 for www.
-            return (anchor, True)
         else:
             # External url
             return anchor, False
