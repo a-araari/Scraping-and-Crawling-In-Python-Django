@@ -52,7 +52,7 @@ class Crawl:
         print('EX:', anchor[:len(self.strip_base) + (7 if anchor.startswith('http') else 1) ])
 
         if anchor.startswith('//'):
-            return anchor[2:], True if self.strip_base in anchor[:len(self.strip_base) + (7 if anchor.startswith('http') else 1) ] else False
+            return anchor[2:], True if self.strip_base in anchor[:len(self.strip_base) + 3 + (7 if anchor.startswith('http') else 1) ] else False
         elif anchor.startswith('/'):
             return (self.base_url + anchor), True
         elif anchor.startswith(self.base_url):
