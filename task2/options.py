@@ -49,9 +49,9 @@ class Crawl:
         anchor = anchor.replace('www.', '')
 
         if anchor.startswith('//'):
-            return (anchor[2:], True)
+            return anchor[2:], True
         elif anchor.startswith('/'):
-            return (self.base_url + anchor, True)
+            return (self.base_url + anchor), True
         else:
             # External url
             return anchor, False
@@ -105,22 +105,22 @@ class Crawl:
                 sub_url = valid_url
 
                 save(tbl, sub_url, link_type, code, dpt)
-                saved_links.append(sub_url)
+                saved_links.append((sub_url, internal))
                 self.saved_urls.append(sub_url)
                 count += 1
 
             except Exception as e:
                 pass
 
-        for sub_link in saved_links:
+        for sub_link_list in saved_links:
+            sub_link = sub_link_list[0]
+            internal = sub_link_list[1]
+
             if len(self.saved_urls) > self.limit:
                 return
             try:
                 sub_url = sub_link
-                internal = self.strip_base in sub_url[:len(self.strip_base) + 7 + 4]
-
-                link_type = tbl_crawl_task_data.INTERNAL_LINK_TYPE if internal else tbl_crawl_task_data.EXTERNAL_LINK_TYPE
-
+            
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
 
                 if succ and not internal:
