@@ -93,13 +93,14 @@ class Crawl:
         saved_links = list()
 
         for sub_link in links:
-            print('sub_link', sub_link)
             if len(self.saved_urls) > self.limit:
                 print('return', '-'*5, 'SAVED')
                 return
 
             try:
                 sub_url, internal = self.get_url(sub_link)
+                print('sub_url', sub_url)
+
                 if sub_url in self.processed_urls or sub_url.endswith('#'):
                     continue
                 self.processed_urls.append(sub_url)
@@ -125,8 +126,9 @@ class Crawl:
 
             if len(self.saved_urls) > self.limit:
                 return
-                
+
             if not internal:
+                print('not internal')
                 continue
 
             try:
@@ -134,11 +136,13 @@ class Crawl:
             
                 sub_soup, error_msg, succ = self.get_full_page(sub_url)
 
+                print('succ', succ, error_msg)
+
                 if succ and not internal:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
-                pass
+                print(repr(e))
 
 
     def start_crawling(self, save, tbl):
