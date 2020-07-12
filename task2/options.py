@@ -5,8 +5,6 @@ import random
 
 import requests
 from requests.exceptions import ConnectionError as rce
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urlsplit
 from urllib.parse import urlparse
@@ -16,6 +14,7 @@ from django.conf import settings
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
 from task1.options import WebScraper
+from .__init__ import get_driver, decrease_p
 
 
 
@@ -37,11 +36,7 @@ class Crawl:
         self.processed_urls = []
         self.saved_urls = []
 
-        self.options = Options()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--no-sandbox')
-
-        self.driver = webdriver.Chrome('/usr/bin/chromedriver', options=self.options)
+        self.driver = get_driver()
 
     def get_url(self, link):
         # extract link url from the anchor
@@ -190,54 +185,57 @@ def _start_crawl_task(tbl):
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
     """
-    pending_tasks = get_pending_count()
-    while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
-        tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
-        time.sleep(1)
+    try:
         pending_tasks = get_pending_count()
-        
-    tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
-    tbl.save()
+        while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
+            tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
+            time.sleep(1)
+            pending_tasks = get_pending_count()
+            
+        tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
+        tbl.save()
 
-    status_code = None
-    t = 0
-    while t < 3:
-        try:
-            page = requests.get(tbl.url)
-            tbl.status_code = page.status_code
+        status_code = None
+        t = 0
+        while t < 3:
+            try:
+                page = requests.get(tbl.url)
+                tbl.status_code = page.status_code
 
-            if page.status_code in range(200, 300):
-                crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
+                if page.status_code in range(200, 300):
+                    crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
 
-                crw.saved_urls.append(tbl.url)
+                    crw.saved_urls.append(tbl.url)
 
-                succ, error_msg = crw.start_crawling(save, tbl)
-                if succ:
-                    tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+                    succ, error_msg = crw.start_crawling(save, tbl)
+                    if succ:
+                        tbl.status_process = tbl_crawl_task.SUCCESS_STATUS
+                    else:
+                        tbl.status_process = tbl_crawl_task.ERROR_STATUS
+                        tbl.error_msg = error_msg
+                    
                 else:
                     tbl.status_process = tbl_crawl_task.ERROR_STATUS
-                    tbl.error_msg = error_msg
-                
-            else:
+                    tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
+
+                break
+            except rce:
                 tbl.status_process = tbl_crawl_task.ERROR_STATUS
-                tbl.error_msg = f"Cannot connect server: code returned: {status_code}"
+                tbl.error_msg = f'URL not found: {url}'
+                tbl.status_code = status_code
+            except Exception as e:
+                tbl.status_process = tbl_crawl_task.ERROR_STATUS
+                tbl.error_msg = repr(e) # "Server memory is Full, server cannot crawl more urls"
+                tbl.status_code = status_code
 
-            break
-        except rce:
-            tbl.status_process = tbl_crawl_task.ERROR_STATUS
-            tbl.error_msg = f'URL not found: {url}'
-            tbl.status_code = status_code
-        except Exception as e:
-            tbl.status_process = tbl_crawl_task.ERROR_STATUS
-            tbl.error_msg = repr(e) # "Server memory is Full, server cannot crawl more urls"
-            tbl.status_code = status_code
-
-        finally:
-            t += 1
-            decrease(tbl.pending_task)
-            tbl.pending_task = 0
-            tbl.save()
-
+            finally:
+                t += 1
+                tbl.pending_task = 0
+                tbl.save()
+    finally:
+        decrease_p()
+        decrease(tbl.pending_task)
+            
 
 def start_crawl_task(tbl):
     t = threading.Thread(target=_start_crawl_task, args=[tbl])

@@ -10,6 +10,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
 from . import options
+from .__init__ import get_p
 
 
 def validate_key(key):
@@ -19,10 +20,6 @@ def validate_key(key):
     """
     if key != settings.VALIDATION_KEY:
         raise ValueError('Unvalid validation key!')
-
-
-def get_pending_task_count():
-    return tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count() + tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
 
 
 validate = URLValidator()
@@ -81,7 +78,7 @@ class CrawlSetView(APIView):
                 limit=limit,
                 waiting=waiting,
                 scroll=scroll,
-                pending_task=get_pending_task_count(),
+                pending_task=get_p()
             )
             tbl.save()
 

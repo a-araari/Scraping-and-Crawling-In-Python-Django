@@ -22,10 +22,6 @@ def validate_key(key):
         raise ValueError('Unvalid validation key!')
 
 
-def get_pending_task_count():
-    return tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count() + tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS).count()
-
-
 validate = URLValidator()
 
 
