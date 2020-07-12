@@ -229,6 +229,7 @@ def _start_crawl_task(tbl):
                 tbl.error_msg = f'URL not found: {url}'
                 tbl.status_code = status_code
             except Exception as e:
+                print(repr(e))
                 tbl.status_process = tbl_crawl_task.ERROR_STATUS
                 tbl.error_msg = repr(e) # "Server memory is Full, server cannot crawl more urls"
                 tbl.status_code = status_code
