@@ -2,19 +2,19 @@ import traceback
 
 from django.conf import settings
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
+chrom_options = ChromeOptions()
+chrom_options.add_argument('--headless')
+chrom_options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
 driver_list = []
 
 def _get_driver():
-    global options
+    global chrom_options
 
-    return webdriver.Chrome('/usr/bin/chromedriver', options=options)
+    return webdriver.Chrome('/usr/bin/chromedriver', options=chrom_options)
 
     
 def init_driver_list():
