@@ -43,6 +43,7 @@ def get_driver():
 
 
 def free_driver(index):
+    index = int(index)
     driver_list[index][1] = True
 
 
