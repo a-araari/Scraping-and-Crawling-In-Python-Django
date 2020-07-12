@@ -7,7 +7,7 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
-driver_list = list()
+driver_list = []
 
 def _get_driver():
     global options
