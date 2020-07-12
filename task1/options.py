@@ -158,6 +158,7 @@ def _start_task(tbl):
                 time.sleep(2)
                 pending_tasks = get_pending_count()
 
+            tbl.pending_task = 0
             tbl.status_process = tbl_page_data.PROCESSING_STATUS
             tbl.save()
 
