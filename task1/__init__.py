@@ -1,3 +1,5 @@
+import traceback
+
 from django.conf import settings
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,7 +19,7 @@ def _get_driver():
     
 def init_driver_list():
     for i in range(settings.MAX_SCRAPE_COUNT):
-        driver_list.append((get_driver, True))
+        driver_list[i] = (get_driver, True)
 
 
 def get_driver():
@@ -36,7 +38,7 @@ def get_driver():
 
         return driver, index
     except Exception as e:
-        print(repr(e))
+        traceback.print_exc()
         raise e
 
 
