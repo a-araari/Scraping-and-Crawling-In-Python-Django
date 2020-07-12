@@ -85,7 +85,6 @@ class Crawl:
         return BeautifulSoup(page_content, 'html.parser'), error_text, success
 
     def _crawl(self, soup, save, tbl, count=0, dpt=0):
-        print('-'*10, 'crawling depth', dpt, ':', count)
         if len(self.saved_urls) >= self.limit or soup is None:
             return
 
@@ -94,12 +93,10 @@ class Crawl:
 
         for sub_link in links:
             if len(self.saved_urls) > self.limit:
-                print('return', '-'*5, 'SAVED')
                 return
 
             try:
                 sub_url, internal = self.get_url(sub_link)
-                print('sub_url', sub_url)
 
                 if sub_url in self.processed_urls or sub_url.endswith('#'):
                     continue
@@ -122,13 +119,11 @@ class Crawl:
         for sub_link_list in saved_links:
             sub_link = sub_link_list[0]
             internal = sub_link_list[1]
-            print('crawling', sub_link)
 
             if len(self.saved_urls) > self.limit:
                 return
 
             if not internal:
-                print('not internal')
                 continue
 
             try:
@@ -142,7 +137,7 @@ class Crawl:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
-                print(repr(e))
+                pass
 
 
     def start_crawling(self, save, tbl):
