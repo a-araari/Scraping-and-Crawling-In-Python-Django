@@ -14,12 +14,12 @@ from django.conf import settings
 
 from .models import tbl_crawl_task, tbl_crawl_task_data
 from task1.options import WebScraper
-from .__init__ import get_driver, decrease_p
+from .__init__ import get_driver, decrease_p, free_driver
 
 
 
 class Crawl:
-    def __init__(self, url, limit, waiting, scroll):
+    def __init__(self, url, limit, waiting, scroll, driver):
         self.url = url
         self.limit = int(limit) - 1
         self.waiting = int(waiting)
@@ -36,7 +36,7 @@ class Crawl:
         self.processed_urls = []
         self.saved_urls = []
 
-        self.driver = get_driver()
+        self.driver = driver
 
     def get_url(self, link):
         # extract link url from the anchor
@@ -185,25 +185,30 @@ def _start_crawl_task(tbl):
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
     """
+    driver = index = None
     try:
         pending_tasks = get_pending_count()
         while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
             tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
             time.sleep(1)
             pending_tasks = get_pending_count()
-            
+
+        tbl.pending_task = 0            
         tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
         tbl.save()
 
         status_code = None
         t = 0
+        
+        driver, index = get_driver()
         while t < 3:
             try:
                 page = requests.get(tbl.url)
                 tbl.status_code = page.status_code
 
                 if page.status_code in range(200, 300):
-                    crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll)
+
+                    crw = Crawl(tbl.url, tbl.limit, tbl.waiting, tbl.scroll, driver)
 
                     crw.saved_urls.append(tbl.url)
 
@@ -233,6 +238,8 @@ def _start_crawl_task(tbl):
                 tbl.pending_task = 0
                 tbl.save()
     finally:
+        if index:
+            free_driver(index)
         decrease_p()
         decrease(tbl.pending_task)
             
