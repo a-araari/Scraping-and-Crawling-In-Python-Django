@@ -21,19 +21,23 @@ def init_driver_list():
 
 
 def get_driver():
-    global driver_list
+    try:
+        global driver_list
 
-    if len(driver_list) == 0:
-        init_driver_list()
+        if len(driver_list) == 0:
+            init_driver_list()
 
-    driver = index = None
-    for i in range(settings.MAX_SCRAPE_COUNT):
-        if driver_list[i][1] == True:
-            driver_list[i][1] = False
-            driver = driver_list[i][0]
-            index = i
+        driver = index = None
+        for i in range(settings.MAX_SCRAPE_COUNT):
+            if driver_list[i][1] == True:
+                driver_list[i][1] = False
+                driver = driver_list[i][0]
+                index = i
 
-    return driver, index
+        return driver, index
+    except Exception as e:
+        print(repr(e))
+        raise e
 
 
 def free_driver(index):
