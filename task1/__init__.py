@@ -19,7 +19,7 @@ def _get_driver():
     
 def init_driver_list():
     for i in range(settings.MAX_SCRAPE_COUNT):
-        driver_list.append((get_driver, True))
+        driver_list.append([get_driver, True])
 
 
 def get_driver():
