@@ -4,17 +4,17 @@ from django.conf import settings
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
-chrom_options = ChromeOptions()
-chrom_options.add_argument('--headless')
-chrom_options.add_argument('--no-sandbox')
+chrome_options = ChromeOptions()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
 driver_list = []
 
 def _get_driver():
-    global chrom_options
+    global chrome_options
 
-    return webdriver.Chrome('/usr/bin/chromedriver', options=chrom_options)
+    return webdriver.Chrome('/usr/bin/chromedriver', options=chrome_options)
 
     
 def init_driver_list():
@@ -23,14 +23,14 @@ def init_driver_list():
 
 
 def get_driver():
+    global driver_list
     try:
-        global driver_list
 
         if len(driver_list) == 0:
             init_driver_list()
 
         driver = index = None
-        for i in range(settings.MAX_SCRAPE_COUNT):
+        for i in range(len(driver_list)):
             if driver_list[i][1] == True:
                 driver_list[i][1] = False
                 driver = driver_list[i][0]

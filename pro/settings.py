@@ -27,8 +27,8 @@ SECRET_KEY = '9t=6_#7j*k-=bc$ni@#5cl(a3rh3s!p+4a26)*b%-@g)z(3ufy'
 VALIDATION_KEY = 'OEpotRjkg7UGxba6AfOUcIbNfNlvE9a1'
 
 # how many tasks can run in the same time
-MAX_CRAWL_COUNT = 1
-MAX_SCRAPE_COUNT = 1
+MAX_CRAWL_COUNT = 4
+MAX_SCRAPE_COUNT = 4
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
