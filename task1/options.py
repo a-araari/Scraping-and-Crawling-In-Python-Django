@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 from .models import tbl_page_data
-from .__init__ import get_driver, decrease_p
+from .__init__ import get_driver, decrease_p, free_driver
 
 
 class WebScraper:
@@ -83,7 +83,7 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        self.driver = get_driver()
+        self.driver, index = get_driver()
 
         page_content = ''
         try:
@@ -114,7 +114,8 @@ class WebScraper:
 
         except Exception as ex:
             return page_content, repr(ex), False
-
+        finally:
+            free_driver(index)
 
         return page_content, None, True
 
@@ -148,7 +149,7 @@ def _start_task(tbl):
         while t < 3:
             
             pending_tasks = get_pending_count()
-            while pending_tasks >= 1 or tbl.pending_task >= 1:
+            while pending_tasks >= settings.settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.settings.MAX_SCRAPE_COUNT:
                 try:
                     tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
                 except Exception as e:
@@ -194,8 +195,6 @@ def _start_task(tbl):
 
                 if success:
                     break
-                else:
-                    get_driver(force=True)
 
 
             except rce:
