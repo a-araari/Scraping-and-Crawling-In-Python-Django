@@ -138,7 +138,7 @@ class Crawl:
 
                 print('succ', succ, error_msg)
 
-                if succ and not internal:
+                if succ and internal:
                     self._crawl(sub_soup, save, tbl, count=count, dpt=dpt+1)
 
             except Exception as e:
