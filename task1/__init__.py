@@ -9,6 +9,7 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
+init = False
 driver_list = []
 
 def _get_driver():
@@ -26,11 +27,12 @@ def init_driver_list():
 
 
 def get_driver():
-    global driver_list
+    global driver_list, init
     try:
 
         print('SCRAPE:', 'G-D')
-        if len(driver_list) == 0:
+        if not init:
+            init = True
             init_driver_list()
 
         driver = index = None
@@ -40,7 +42,7 @@ def get_driver():
                 driver = driver_list[i][0]
                 index = i
                 break
-                
+
         print('SCRAPE:', 'Driver', index, 'is available')
 
         return driver, index
