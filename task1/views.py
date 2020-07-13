@@ -51,6 +51,8 @@ def auto_delete():
         if not p_set:
             p_set = True
             set_p(tbl_page_data.filter(status_process=tbl.NONE_STATUS).count())
+    except:
+        pass
     try:
         before_month = date.today() - timedelta(days=30)
         tbl_page_data.objects.filter(created_at__lte=before_month).delete()
