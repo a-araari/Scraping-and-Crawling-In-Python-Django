@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from task1.models import tbl_page_data
+from task1 import options
 
 
 urlpatterns = [
@@ -32,12 +33,15 @@ urlpatterns = [
 
 # ---------- Restart Uncompleted tasks on server cruch ----------
 def run_p_task(task):
-    print(task.task_id)
+    # starting the task in a seperate Thread
+    # see options.py
+    options.start_task(task)
+
 
 
 def run_n_task(task):
-    print(task.task_id)
-    
+    options.start_task(task)
+        
 
 init_restart_done = False
 
