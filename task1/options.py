@@ -139,9 +139,9 @@ def decrease(pt):
                 t.pending_task = t.pending_task - 1
                 t.save()
             except Exception as e:
-                pass
+                print(e)
     except Exception as e:
-        pass
+        print('2', e)
 
 
 def _start_task(tbl):
