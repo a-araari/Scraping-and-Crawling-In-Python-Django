@@ -185,7 +185,8 @@ def _start_crawl_task(tbl):
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
     """
-    driver, index = None
+    driver = None
+    index = None
     try:
         pending_tasks = get_pending_count()
         while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
