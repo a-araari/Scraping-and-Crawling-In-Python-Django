@@ -4,6 +4,9 @@ from django.conf import settings
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
+from .models import tbl_page_data
+
+
 chrome_options = ChromeOptions()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
@@ -85,3 +88,29 @@ def decrease_p():
     global p
 
     p -= 1
+
+
+# ---------- Restart Uncompleted tasks on server cruch ----------
+def run_p_task(task):
+    print(task.task_id)
+
+
+def run_n_task(task):
+    print(task.task_id)
+    
+
+def init_restart_tasks():
+    p_tasks = tbl_page_data.filter(process_status=tbl_page_data.PROCESS_STATUS)
+    n_tasks = tbl_page_data.filter(process_status=tbl_page_data.NONE_STATUS)
+
+    for p in p_tasks:
+        run_p_task(p)
+
+    for n in n_tasks:
+        run_n_task(n)
+
+init_restart_done = False
+
+if not init_restart_done:
+    init_restart_done = True
+    init_restart_tasks()
