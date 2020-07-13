@@ -83,7 +83,9 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        if not self.driver:
+        owner = True
+        if self.driver is None:
+            owner = False
             self.driver, index = get_driver()
 
         page_content = ''
@@ -114,9 +116,11 @@ class WebScraper:
             page_content = self.get_content()
 
         except Exception as ex:
+            traceback.print_exc()
             return page_content, repr(ex), False
         finally:
-            free_driver(index)
+            if owner:
+                free_driver(index)
 
         return page_content, None, True
 
