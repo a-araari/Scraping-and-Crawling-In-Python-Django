@@ -74,6 +74,10 @@ def free_driver(index):
 
 p = -1
 
+def set_p(v):
+    global p
+    p = v
+
 def get_p():
     global p
 
@@ -85,3 +89,5 @@ def decrease_p():
     global p
 
     p -= 1
+    if p < 0:
+        p = 0
