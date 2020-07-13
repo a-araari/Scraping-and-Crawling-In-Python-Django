@@ -19,7 +19,7 @@ from django.urls import path, include
 from task1.models import tbl_page_data
 from task1 import options
 from task2.models import tbl_crawl_task
-from task2 import options2
+from task2 import options as options2
 
 
 urlpatterns = [
