@@ -40,7 +40,7 @@ def run_p_task(task):
 
 
 def run_n_task(task):
-    options.start_task(task, force=True)
+    options.start_task(task)
         
 
 init_restart_done = False
