@@ -25,7 +25,40 @@ def validate_key(key):
 validate = URLValidator()
 
 
+# ---------- Restart Uncompleted tasks on server cruch ----------
+def run_p_task(task):
+    print(task.task_id)
+
+
+def run_n_task(task):
+    print(task.task_id)
+    
+
+init_restart_done = False
+
+def init_restart_tasks():
+    global init_restart_done
+
+    if not init_restart_done:
+        init_restart_done = True
+    else:
+        return
+
+    p_tasks = tbl_page_data.filter(process_status=tbl_page_data.PROCESS_STATUS)
+    n_tasks = tbl_page_data.filter(process_status=tbl_page_data.NONE_STATUS)
+
+    for p in p_tasks:
+        run_p_task(p)
+
+    for n in n_tasks:
+        run_n_task(n)
+
+# ---------------------------------------------------------------
+
+
 def validate_url(url):
+    # check for cruch
+    init_restart_tasks()
     try:
         validate(url)
     except ValidationError as e:
