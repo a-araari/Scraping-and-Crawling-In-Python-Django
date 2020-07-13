@@ -47,11 +47,11 @@ def run_p_n_task(task):
 def run_c_p_task(task):
     # starting the task in a seperate Thread
     # see options.py
-    options2.start_task(task, force=True)
+    options2.start_crawl_task(task, force=True)
 
 
 def run_c_n_task(task):
-    options2.start_task(task)
+    options2.start_crawl_task(task)
         
 
 init_restart_done = False
