@@ -80,6 +80,9 @@ def init_restart_tasks():
     c_p_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS)
     c_n_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS)
 
+    if c_p_tasks.count() == 0:
+        options2.decrease(0)
+
     for p in c_p_tasks:
         run_c_p_task(p)
 
