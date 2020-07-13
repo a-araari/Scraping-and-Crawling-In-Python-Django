@@ -138,14 +138,11 @@ class Crawl:
     def start_crawling(self, save, tbl):
         soup, error_text, success = self.get_full_page(tbl.url)
 
-        try:
-            if success:
-                self._crawl(soup, save, tbl)
-                return True, ''
-            else:
-                return False, error_text
-        finally:
-            self.driver.quit()
+        if success:
+            self._crawl(soup, save, tbl)
+            return True, ''
+        else:
+            return False, error_text
 
 
 def save(tbl, url, link_type, status_code, depth_level):
