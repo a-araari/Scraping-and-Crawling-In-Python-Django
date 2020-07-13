@@ -67,7 +67,8 @@ def init_restart_tasks():
     p_p_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS)
     p_n_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS)
 
-
+    if p_p_tasks.count() == 0:
+        options.decrease(0)
 
     for p in p_p_tasks:
         run_p_p_task(p)
