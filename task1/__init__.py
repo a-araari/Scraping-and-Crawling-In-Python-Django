@@ -43,6 +43,7 @@ def get_driver():
 
         driver = index = None
         while driver is None:
+            print('nulling', driver_list)
             if driver_list is None:
                 init_driver_list()
                 
