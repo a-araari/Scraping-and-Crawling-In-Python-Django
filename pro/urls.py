@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from task1.models import tbl_page_data
+from task1 import options
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -25,3 +29,39 @@ urlpatterns = [
     # task2 api app
     path('crawl/', include('task2.urls')),
 ]
+
+
+# ---------- Restart Uncompleted tasks on server cruch ----------
+def run_p_task(task):
+    # starting the task in a seperate Thread
+    # see options.py
+    options.start_task(task)
+
+
+
+def run_n_task(task):
+    options.start_task(task)
+        
+
+init_restart_done = False
+
+def init_restart_tasks():
+    global init_restart_done
+
+    if not init_restart_done:
+        init_restart_done = True
+    else:
+        return
+
+    p_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS)
+    n_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS)
+
+    for p in p_tasks:
+        run_p_task(p)
+
+    for n in n_tasks:
+        run_n_task(n)
+
+
+init_restart_tasks()
+# ---------------------------------------------------------------

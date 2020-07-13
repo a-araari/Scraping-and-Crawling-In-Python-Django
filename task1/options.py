@@ -149,7 +149,7 @@ def decrease(pt):
         print('2', e)
 
 
-def _start_task(tbl):
+def _start_task(tbl, force=False):
     """
     Task work goes here!
     tbl saved each time status_code or status_process changed
@@ -158,15 +158,16 @@ def _start_task(tbl):
         t = 0
         while t < 3:
             
-            pending_tasks = get_pending_count()
-            while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
-                try:
-                    tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
-                except Exception as e:
-                    pass
-                
-                time.sleep(2)
+            if not force:
                 pending_tasks = get_pending_count()
+                while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
+                    try:
+                        tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
+                    except Exception as e:
+                        pass
+                    
+                    time.sleep(2)
+                    pending_tasks = get_pending_count()
 
             tbl.pending_task = 0
             tbl.status_process = tbl_page_data.PROCESSING_STATUS
@@ -223,8 +224,9 @@ def _start_task(tbl):
         decrease_p()
         decrease(tbl.pending_task)
 
-def start_task(tbl):
-    t = threading.Thread(target=_start_task, args=[tbl])
+
+def start_task(tbl, force=False):
+    t = threading.Thread(target=_start_task, args=[tbl, force])
     t.setDaemon(True)
     t.start()
 
