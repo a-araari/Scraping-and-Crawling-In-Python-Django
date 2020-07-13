@@ -136,7 +136,7 @@ def decrease(pt):
             try:
                 if t.pending_task == 0:
                     continue
-                print('decreasing', tbl.pending_task)
+                print('decreasing', t.pending_task)
                 t.pending_task = t.pending_task - 1
                 t.save()
             except Exception as e:
@@ -229,6 +229,6 @@ def delete_tbl(tbl):
     """
     Delete an instance on tbl_page_data
     None: this delete the instance without any confirmation!
-                    print('decreasing', tbl.pending_task)"""
+                    print('decreasing', t.pending_task)"""
 
     tbl.delete()
