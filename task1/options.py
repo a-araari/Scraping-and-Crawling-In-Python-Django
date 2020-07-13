@@ -154,16 +154,12 @@ def _start_task(tbl):
     Task work goes here!
     tbl saved each time status_code or status_process changed
     """
-    print('starting', tbl.task_id)
     try:
         t = 0
         while t < 3:
             
             pending_tasks = get_pending_count()
             while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
-                if (tbl.status_process != tbl_page_data.PROCESSING_STATUS):
-                    break
-                print('waiting')
                 try:
                     tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
                 except Exception as e:
@@ -171,7 +167,7 @@ def _start_task(tbl):
                 
                 time.sleep(2)
                 pending_tasks = get_pending_count()
-            print('continue')
+
             tbl.pending_task = 0
             tbl.status_process = tbl_page_data.PROCESSING_STATUS
             tbl.save()
