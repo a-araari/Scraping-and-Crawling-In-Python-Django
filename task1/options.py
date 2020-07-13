@@ -212,11 +212,11 @@ def _start_task(tbl):
 
             finally:
                 t += 1
-                tbl.pending_task = 0
-                tbl.save()
     finally:
         decrease_p()
         decrease(tbl.pending_task)
+        tbl.pending_task = 0
+        tbl.save()
 
 def start_task(tbl):
     t = threading.Thread(target=_start_task, args=[tbl])
