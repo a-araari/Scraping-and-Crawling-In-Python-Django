@@ -160,7 +160,7 @@ def _start_task(tbl):
         while t < 3:
             
             pending_tasks = get_pending_count()
-            while pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
+            while (tbl.status_process != tbl_page_data.PROCESSING_STATUS) or pending_tasks >= settings.MAX_SCRAPE_COUNT or tbl.pending_task >= settings.MAX_SCRAPE_COUNT:
                 print('waiting')
                 try:
                     tbl = tbl_page_data.objects.get(task_id=tbl.task_id)
