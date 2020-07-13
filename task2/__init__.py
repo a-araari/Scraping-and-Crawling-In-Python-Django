@@ -40,7 +40,8 @@ def get_driver():
                 driver_list[i][1] = False
                 driver = driver_list[i][0]
                 index = i
-        
+                break
+                
         print('crawl:', 'Driver', index, 'is available')
 
         return driver, index
