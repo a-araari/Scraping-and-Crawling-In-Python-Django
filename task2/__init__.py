@@ -21,6 +21,7 @@ def init_driver_list():
     global driver_list
     print('crawl:', 'init drivers')
     for i in range(settings.MAX_CRAWL_COUNT):
+        print('crawl:', 'init', i)
         driver_list.append([_get_driver(), True])
 
 
