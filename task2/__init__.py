@@ -28,7 +28,7 @@ def get_driver():
     global driver_list
     try:
 
-    print('crawl:', 'G-D')
+        print('crawl:', 'G-D')
 
         if len(driver_list) == 0:
             init_driver_list()
