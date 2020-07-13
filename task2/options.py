@@ -169,12 +169,16 @@ def decrease(pt):
             try:
                 if t.pending_task == 0:
                     continue
+                t = tbl_crawl_task.objects.get(task_id=t.task_id)
+                
+                if t.pending_task == 0:
+                    continue
                 t.pending_task = t.pending_task - 1
                 t.save()
-            except:
-                pass
-    except:
-        pass
+            except Exception as e:
+                print(e)
+    except Exception as e:
+        print('2', e)
 
 
 def _start_crawl_task(tbl):
@@ -198,10 +202,7 @@ def _start_crawl_task(tbl):
         status_code = None
         t = 0
         
-        while driver is None:
-            driver, index = get_driver()
-            free_driver(index)
-            
+        driver, index = get_driver()
         while t < 3:
             try:
                 page = requests.get(tbl.url)
