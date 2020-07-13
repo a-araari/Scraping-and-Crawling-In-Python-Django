@@ -1,4 +1,4 @@
-import traceback
+import traceback, time
 
 from django.conf import settings
 from selenium import webdriver
@@ -10,6 +10,7 @@ chrome_options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
 init = False
+init_completed = False
 driver_list = []
 
 def _get_driver():
@@ -20,10 +21,12 @@ def _get_driver():
 
     
 def init_driver_list():
-    global driver_list
+    global driver_list, init_completed
+
     print('SCRAPE:', 'init drivers')
     for i in range(settings.MAX_SCRAPE_COUNT):
         driver_list.append([_get_driver(), True])
+    init_completed = True
 
 
 def get_driver():
@@ -34,6 +37,9 @@ def get_driver():
         if not init:
             init = True
             init_driver_list()
+
+        while not init_completed:
+            time.sleep(1)
 
         driver = index = None
         for i in range(len(driver_list)):
