@@ -13,11 +13,13 @@ driver_list = []
 
 def _get_driver():
     global chrome_options
-
+    print('crawl:', 'getting new driver')
     return webdriver.Chrome('/usr/bin/chromedriver', options=chrome_options)
 
     
 def init_driver_list():
+    global driver_list
+    print('crawl:', 'init drivers')
     for i in range(settings.MAX_CRAWL_COUNT):
         driver_list.append([_get_driver(), True])
 
@@ -25,6 +27,8 @@ def init_driver_list():
 def get_driver():
     global driver_list
     try:
+
+    print('crawl:', 'G-D')
 
         if len(driver_list) == 0:
             init_driver_list()
@@ -35,6 +39,8 @@ def get_driver():
                 driver_list[i][1] = False
                 driver = driver_list[i][0]
                 index = i
+        
+        print('crawl:', 'Driver', index, 'is available')
 
         return driver, index
     except Exception as e:
@@ -44,6 +50,7 @@ def get_driver():
 
 def free_driver(index):
     index = int(index)
+    print('crawl:', 'Freeing driver', index)
     driver_list[index][1] = True
 
 
