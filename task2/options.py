@@ -198,7 +198,10 @@ def _start_crawl_task(tbl):
         status_code = None
         t = 0
         
-        driver, index = get_driver()
+        while driver is None:
+            driver, index = get_driver()
+            free_driver(index)
+            
         while t < 3:
             try:
                 page = requests.get(tbl.url)
