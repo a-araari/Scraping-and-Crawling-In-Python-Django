@@ -74,10 +74,6 @@ def free_driver(index):
 
 p = -1
 
-def set_p(v):
-    global p
-    p = v
-
 def get_p():
     global p
 
