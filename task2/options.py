@@ -182,7 +182,7 @@ def decrease(pt):
         print('2', e)
 
 
-def _start_crawl_task(tbl):
+def _start_crawl_task(tbl, force=False):
     """
     Crawl work goes here!
     tbl saved each time status_code or status_process changed
@@ -190,11 +190,12 @@ def _start_crawl_task(tbl):
     driver = None
     index = None
     try:
-        pending_tasks = get_pending_count()
-        while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
-            tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
-            time.sleep(1)
+        if not force:
             pending_tasks = get_pending_count()
+            while pending_tasks >= settings.MAX_CRAWL_COUNT or tbl.pending_task >= settings.MAX_CRAWL_COUNT:
+                tbl = tbl_crawl_task.objects.get(task_id=tbl.task_id)
+                time.sleep(1)
+                pending_tasks = get_pending_count()
 
         tbl.pending_task = 0            
         tbl.status_process = tbl_crawl_task.PROCESSING_STATUS
@@ -249,8 +250,8 @@ def _start_crawl_task(tbl):
         decrease(tbl.pending_task)
             
 
-def start_crawl_task(tbl):
-    t = threading.Thread(target=_start_crawl_task, args=[tbl])
+def start_crawl_task(tbl, force=False):
+    t = threading.Thread(target=_start_crawl_task, args=[tbl, force])
     t.setDaemon(True)
     t.start()
 

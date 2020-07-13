@@ -18,6 +18,8 @@ from django.urls import path, include
 
 from task1.models import tbl_page_data
 from task1 import options
+from task2.models import tbl_crawl_task
+from task2 import options2
 
 
 urlpatterns = [
@@ -32,15 +34,24 @@ urlpatterns = [
 
 
 # ---------- Restart Uncompleted tasks on server cruch ----------
-def run_p_task(task):
+def run_p_p_task(task):
     # starting the task in a seperate Thread
     # see options.py
     options.start_task(task, force=True)
 
 
-
-def run_n_task(task):
+def run_p_n_task(task):
     options.start_task(task)
+        
+
+def run_c_p_task(task):
+    # starting the task in a seperate Thread
+    # see options.py
+    options2.start_task(task, force=True)
+
+
+def run_c_n_task(task):
+    options2.start_task(task)
         
 
 init_restart_done = False
@@ -48,19 +59,29 @@ init_restart_done = False
 def init_restart_tasks():
     global init_restart_done
 
-    if not init_restart_done:
-        init_restart_done = True
-    else:
+    if init_restart_done:
         return
 
-    p_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS)
-    n_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS)
+    init_restart_done = True
 
-    for p in p_tasks:
-        run_p_task(p)
+    p_p_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS)
+    p_n_tasks = tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS)
 
-    for n in n_tasks:
-        run_n_task(n)
+    for p in p_p_tasks:
+        run_p_p_task(p)
+
+    for n in p_n_tasks:
+        run_p_n_task(n)
+
+
+    c_p_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS)
+    c_n_tasks = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS)
+
+    for p in c_p_tasks:
+        run_c_p_task(p)
+
+    for n in c_n_tasks:
+        run_c_n_task(n)
 
 
 init_restart_tasks()
