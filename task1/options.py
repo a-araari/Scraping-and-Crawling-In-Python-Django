@@ -139,6 +139,9 @@ def decrease(pt):
                 print('decreasing', t.pending_task)
                 time.sleep(float(f'{random.randint(0, 2)}.{random.randint(0, 99999)}'))
                 t = tbl_page_data.objects.get(task_id=t.task_id)
+                
+                if t.pending_task == 0:
+                    continue
                 t.pending_task = t.pending_task - 1
                 t.save()
             except Exception as e:
