@@ -243,7 +243,7 @@ def _start_crawl_task(tbl):
                 tbl.pending_task = 0
                 tbl.save()
     finally:
-        if index:
+        if index is not None:
             free_driver(index)
         decrease_p()
         decrease(tbl.pending_task)
