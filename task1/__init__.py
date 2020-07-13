@@ -30,7 +30,7 @@ def init_driver_list():
 
 
 def get_driver():
-    global driver_list, init
+    global driver_list, init, init_completed
     try:
 
         print('SCRAPE:', 'G-D')
