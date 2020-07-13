@@ -21,7 +21,7 @@ from .__init__ import get_driver, decrease_p, free_driver
 class Crawl:
     def __init__(self, url, limit, waiting, scroll, driver):
         self.url = url
-        self.limit = int(limit) - 1
+        self.limit = int(limit)
         self.waiting = int(waiting)
         self.scroll = int(scroll)
         self.count = 1
