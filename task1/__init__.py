@@ -68,6 +68,8 @@ def get_driver():
 def free_driver(index):
     print('SCRAPE:', 'Freeing driver', index)
     driver_list[index][1] = True
+    if driver_list[index][0] is None:
+        driver_list[index][0] = _get_driver()
 
 
 p = -1
