@@ -35,12 +35,12 @@ urlpatterns = [
 def run_p_task(task):
     # starting the task in a seperate Thread
     # see options.py
-    options.start_task(task)
+    options.start_task(task, force=True)
 
 
 
 def run_n_task(task):
-    options.start_task(task)
+    options.start_task(task, force=True)
         
 
 init_restart_done = False
