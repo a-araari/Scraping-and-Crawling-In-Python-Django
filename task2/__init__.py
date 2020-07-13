@@ -46,6 +46,10 @@ def get_driver():
             if driver_list[i][1] == True:
                 driver_list[i][1] = False
                 driver = driver_list[i][0]
+                if driver is None:
+                    driver_list[i][0] = _get_driver()
+                    driver = driver_list[i][0]
+
                 index = i
                 break
 
