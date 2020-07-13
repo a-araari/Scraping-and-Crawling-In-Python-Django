@@ -83,7 +83,8 @@ class WebScraper:
         time.sleep(self.waiting)
 
     def start_scraping(self):
-        self.driver, index = get_driver()
+        if not self.driver:
+            self.driver, index = get_driver()
 
         page_content = ''
         try:
