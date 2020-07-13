@@ -1,4 +1,4 @@
-import traceback
+import traceback, time
 
 from django.conf import settings
 from selenium import webdriver
@@ -10,31 +10,36 @@ chrome_options.add_argument('--no-sandbox')
 
 # (Webdriver: driver, Boolean: free)
 init = False
+init_completed = False
 driver_list = []
 
 def _get_driver():
     global chrome_options
     print('crawl:', 'getting new driver')
+
     return webdriver.Chrome('/usr/bin/chromedriver', options=chrome_options)
 
     
 def init_driver_list():
-    global driver_list
+    global driver_list, init_completed
+
     print('crawl:', 'init drivers')
     for i in range(settings.MAX_CRAWL_COUNT):
-        print('crawl:', 'init', i)
         driver_list.append([_get_driver(), True])
+    init_completed = True
 
 
 def get_driver():
-    global driver_list, init
+    global driver_list, init, init_completed
     try:
 
         print('crawl:', 'G-D')
-
         if not init:
             init = True
             init_driver_list()
+
+        while not init_completed:
+            time.sleep(1)
 
         driver = index = None
         for i in range(len(driver_list)):
@@ -53,7 +58,6 @@ def get_driver():
 
 
 def free_driver(index):
-    index = int(index)
     print('crawl:', 'Freeing driver', index)
     driver_list[index][1] = True
 
