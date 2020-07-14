@@ -86,3 +86,5 @@ def decrease_p():
     global p
 
     p -= 1
+    if p < 0:
+        p = 0
