@@ -84,6 +84,10 @@ def init_restart_tasks():
         options2.decrease(0)
 
     for p in c_p_tasks:
+        try:
+            p.tbl_crawl_task_data_set.all().delete()
+        except:
+            pass
         run_c_p_task(p)
 
     for n in c_n_tasks:
