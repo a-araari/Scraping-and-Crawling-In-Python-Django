@@ -77,7 +77,9 @@ p = -1
 
 def set_p(pv):
     global p
+    print('setting p', p, pv)
     p = pv
+    print('DONE setting p', p, pv)
 
 
 def get_p():
