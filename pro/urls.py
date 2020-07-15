@@ -93,6 +93,27 @@ def init_restart_tasks():
     for n in c_n_tasks:
         run_c_n_task(n)
 
+set_p = False
+
+
+def set_p_count():
+    if set_p:
+        return
+
+    set_p = True
+
+    p_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    p_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
+
+    options.set_p(p_p_count + p_n_count - 1)
+
+    c_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
+    c_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
+
+    options2.set_p(c_p_count + c_n_count - 1)
+
+
+set_p_count()
 
 init_restart_tasks()
 # ---------------------------------------------------------------
