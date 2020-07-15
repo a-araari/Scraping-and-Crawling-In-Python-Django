@@ -115,7 +115,7 @@ def set_p_count():
 
     print(c_p_count, c_n_count)
 
-    set_p2(c_p_count + c_n_count)
+    set_p2(c_p_count + c_n_count - 1)
 
 
 set_p_count()
