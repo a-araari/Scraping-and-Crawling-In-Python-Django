@@ -18,8 +18,10 @@ from django.urls import path, include
 
 from task1.models import tbl_page_data
 from task1 import options
+from task1.__init__ import set_p as set_p1
 from task2.models import tbl_crawl_task
 from task2 import options as options2
+from task2.__init__ import set_p as set_p2
 
 
 urlpatterns = [
@@ -106,12 +108,12 @@ def set_p_count():
     p_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
     p_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
 
-    options.set_p(p_p_count + p_n_count - 1)
+    set_p1(p_p_count + p_n_count - 1)
 
     c_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
     c_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
 
-    options2.set_p(c_p_count + c_n_count - 1)
+    .set_p2(c_p_count + c_n_count - 1)
 
 
 set_p_count()
