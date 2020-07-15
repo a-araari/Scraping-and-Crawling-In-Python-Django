@@ -105,8 +105,8 @@ def set_p_count():
 
     set_p = True
 
-    p_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
-    p_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
+    p_p_count = tbl_page_data.objects.filter(status_process=tbl_page_data.PROCESSING_STATUS).count()
+    p_n_count = tbl_page_data.objects.filter(status_process=tbl_page_data.NONE_STATUS).count()
 
     set_p1(p_p_count + p_n_count - 1)
 
