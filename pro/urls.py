@@ -113,7 +113,7 @@ def set_p_count():
     c_p_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.PROCESSING_STATUS).count()
     c_n_count = tbl_crawl_task.objects.filter(status_process=tbl_crawl_task.NONE_STATUS).count()
 
-    .set_p2(c_p_count + c_n_count - 1)
+    set_p2(c_p_count + c_n_count - 1)
 
 
 set_p_count()
