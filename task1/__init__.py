@@ -92,4 +92,4 @@ def decrease_p():
 
     p -= 1
     if p < 0:
-        p = 0
+        p = -1

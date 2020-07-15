@@ -79,7 +79,7 @@ def set_p(pv):
     global p
     p = pv
 
-    
+
 def get_p():
     global p
 
@@ -92,4 +92,4 @@ def decrease_p():
 
     p -= 1
     if p < 0:
-        p = 0
+        p = -1
