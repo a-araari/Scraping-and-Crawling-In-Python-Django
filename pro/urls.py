@@ -97,6 +97,7 @@ set_p = False
 
 
 def set_p_count():
+    global set_p
     if set_p:
         return
 
