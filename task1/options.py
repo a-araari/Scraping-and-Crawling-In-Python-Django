@@ -221,7 +221,7 @@ def _start_task(tbl, force=False):
                 t += 1
     finally:
         decrease_p()
-        print('decreasing ', tbl.task_id, pt)
+        print('decreasing ', tbl.task_id, tbl.pending_task)
         decrease(tbl.pending_task)
         tbl.pending_task = 0
         tbl.save()
