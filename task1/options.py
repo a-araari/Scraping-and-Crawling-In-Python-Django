@@ -130,6 +130,7 @@ def get_pending_count():
 
 
 def decrease(pt):
+    print('decreasing pt', pt)
     try:
         all_gt = tbl_page_data.objects.filter(pending_task__gte=pt)
         for t in all_gt:
@@ -218,11 +219,12 @@ def _start_task(tbl, force=False):
 
             finally:
                 t += 1
-                tbl.pending_task = 0
-                tbl.save()
     finally:
         decrease_p()
+        print('decreasing ', tbl.task_id, pt)
         decrease(tbl.pending_task)
+        tbl.pending_task = 0
+        tbl.save()
 
 
 def start_task(tbl, force=False):
