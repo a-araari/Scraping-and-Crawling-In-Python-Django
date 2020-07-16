@@ -137,7 +137,7 @@ def decrease(pt):
             try:
                 if t.pending_task == 0:
                     continue
-                time.sleep(float(f'{random.randint(0, 2)}.{random.randint(0, 99999)}'))
+                time.sleep(float(f'0.{random.randint(0, 99999)}'))
                 t = tbl_page_data.objects.get(task_id=t.task_id)
                 
                 if t.pending_task == 0:
